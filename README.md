@@ -6,6 +6,25 @@
 - [Document Type Definition (DTD)](#document-type-definition)
 - [XML Namespaces](#xml-namespaces)
 - [XML Schema](#xml-schema)
+- [StAX](#stax)
+- [SAX](#sax)
+- [DOM](#dom)
+- [JAXB](#jaxb)
+- [XPath](#xpath)
+- [XQuery](#xquery)
+- [CSS](#css)
+- [XSLT](#xslt)
+- [XSL-FO](#xsl-fo)
+- [RDF](#rdf)
+- [RDFS](#rdfs)
+- [SPARQL](#sparql)
+- [Biznis procesi](#biznis-procesi)
+- [SOA](#soa)
+- [SOAP](#soap)
+- [WSDL](#wsdl)
+- [UDDI](#uddi)
+- [Mikroservisi](#mikroservisi)
+
 
 ## Inzenjering dokumenata
 
@@ -56,6 +75,7 @@
 - **informacioni set** skup elemenata i njihovih veza (stablo)
     - **RDF** graf (vise o tome kasnije :)
 
+
 ## Markup jezici i XML
 - **markup** (tag, code) oznaka koja opisuje deo sadrzaja
     - koriscen i na papiru (naslov, citati...)
@@ -97,8 +117,8 @@
         - XQuery (pretrazivanje)
 - **element** je cvor u hijerarhijskoj strukturi dokumenta (moze sadrzati druge cvorove)
     - **tag** je tekstualna oznaka (markup) za pocetak ili kraj elementa
-        - pocenti (otvarajuci) tag ```<tag>```
-        - zavrsni (zatvarajuci) tag ```</tag>```
+        - pocenti (otvarajuci) tag `<tag>`
+        - zavrsni (zatvarajuci) tag `</tag>`
     - **sadrzaj** elementa se nalazi izmedju pocetnoh i zavrsnog taga
         - tekst
         - podelementi
@@ -127,17 +147,17 @@ taga
     - ne sme poceti sa *xml*
 - ostali delovi XML dokumenta
     - **komentari**
-        - navode se izmedju ```<!-- i --\>```
+        - navode se izmedju `<!-- i --\>`
         - ignorisu se kao sadrzaj (ne prikazuju se, ne obradjuju se programski)
         - bilo gde izvan taga
     - **procesne instrukcije**
-        - navode se izmedju ```<? i ?>```
+        - navode se izmedju `<? i ?>`
         - predstavljaju instrukcije softveru
         - nisu namenjene krajnjem korisniku (čoveku)
         - nisu deo sadržaja dokumenta
         - mogu se nalaziti bilo gde izvan taga
         - xml deklaracija na pocetku dokumenta 
-        ```<?xml **version**="1.0" **encoding**="utf-8" **standalone**="yes"?>```
+        `<?xml **version**="1.0" **encoding**="utf-8" **standalone**="yes"?>`
     - **entiteti**
         - ugradjeni (unapred definisani)
         - \&lt; = &lt;
@@ -146,8 +166,9 @@ taga
         - \&quot; = &quot;
         - \&apos; = &apos;
     - **CDATA sekcije**
-        - navode se izmedju \<![CDATA[i]]>
+        - navode se izmedju `<![CDATA[i]]>`
         - sadrzi tekst koji se interpretira direktno, bez zamene entiteta
+
 
 ## Document Type Definition
 - **DTD** fajl (dokument) opisuje format klase/familije/tipa XML dokumenata
@@ -155,13 +176,13 @@ taga
     - sta je sadrzaj element i atributa
     - dokument je validan ako odgovara svom DTD-u
 - **deklaracija elementa**
-    - opsti oblik \<!ELEMENT naziv (specifikacija_sadržaja)>
+    - opsti oblik `<!ELEMENT naziv (specifikacija_sadržaja)>`
     - naziv postuje pravila imena elemenata i atributa
 - **specifikacija sadrzaja elementa**
     -  #PCDATA
         - sadrzaj elementa je tekst, bez podelemenata
         - tekst je parsiran (reference na entitete su razresene)
-        - primer \<!ELEMENT phone_number (#PCDATA)>
+        - primer `<!ELEMENT phone_number (#PCDATA)>`
     - sekvenca podelemenata
         - podelementi se razdvajaju zarezom
         - uz naziv podelementa navodi se oznaka broja ponavljanja 
@@ -170,31 +191,31 @@ taga
             - \+ = (1..∞)
             - podrazumevano = (1..1)
         - redosled i broj ponavljanja podelemenata su bitni
-        - primer: \<!ELEMENT name (first_name, last_name?)>
+        - primer: `<!ELEMENT name (first_name, last_name?)>`
     - izbor
         - podelementi se razdvajaju uspravnom crtom
         - izbor moze obuhvatati 2+ podelementa
-        - primer: \<!ELEMENT methodResponse (params | fault)>
+        - primer: `<!ELEMENT methodResponse (params | fault)>`
     - upotreba zagrada
         - sekvence, izbori i sufiksi se mogu kombinovati
     - mesani sadrzaj
         - element sadrzi i tekst i podelemente
         - definise se kao izbor ciji prvi element je #PCDATA, ostali lementi su moguci podelementi, a cela grupa ima broj ponavljanja \*
-        - primer: \<!ELEMENT definition (#PCDATA | term)*>
+        - primer: `<!ELEMENT definition (#PCDATA | term)*>`
         - nije moguce navesti broj niti redosled ponavljanja podelemenata i teksta
         - deklaracija mesanog sadrzaja se ne moze koristiti za dalje grupisanje
     - prazan sadrzaj
         - kljucna rec *EMPTY*
-        - primer: \<!ELEMENT img EMPTY>
+        - primer: `<!ELEMENT img EMPTY>`
     - bilo kakav sadrzaj
         - oznacava se kljucnom reci *ANY*
         - uključuje tekst, podelemente, isti element ponovljen rekurzivno
         - nalik mešanom sadržaju bez fiksirane liste podelemenata
         - podelementi koji se pojavljuju u sadržaju moraju biti deklarisani
         - u praksi se koristi samo u toku razvoja DTD-a
-        - primer: \<!ELEMENT page ANY>
+        - primer: `<!ELEMENT page ANY>`
 - **deklaracija atributa**
-    - opsti oblik: \<!ATTLIST imeElementa imeAtr tipAtr default>
+    - opsti oblik: `<!ATTLIST imeElementa imeAtr tipAtr default>`
     - naziv atributa mora da odgovara pravilima za formiranje imena
     - tip atributa se bira iz konačnog skupa
     - obaveznost atributa se bira iz konačnog skupa
@@ -218,31 +239,33 @@ taga
         - \#FIXED "value" : atribut nije obavezan, ali se smatra da uvek postoji u elementu i da ima datu fiksnu vrednost value; ako se eksplicitno navede u elementu, mora imati baš tu vrednost
         - "default": atribut, ako se ne navede, ima podrazumevanu vrednost default datu pod navodnicima
 - **deklaracija entiteta** - pored predefinisanih, moguce je deklarisati nove
-    - opsti oblik \<!ENTITY naziv "sadržaj">
+    - opsti oblik `<!ENTITY naziv "sadržaj">`
     - svaki "naziv" u dokumentu bice zamenjeno sadrzajem, prilikom parsiranja (ucitavanja) XML dokumenta
     - sadrzaj entiteta moze da sardzi druge entitete (bez rekurzije)
     - eksterni entitet - smesten u posebnom fajku, izvan DTD-a
-        - opsti oblik eksternog: \<!ENTITY naziv SYSTEM "adresa_fajla">
-    - moze imati javni identifikator \<!ENTITY name PUBLIC "pubid" SYSTEM "sysid">
+        - opsti oblik eksternog: `<!ENTITY naziv SYSTEM "adresa_fajla">`
+    - moze imati javni identifikator `<!ENTITY name PUBLIC "pubid" SYSTEM "sysid">`
         - javni identifikator može da identifikuje dobro poznati resurs (iz liste takvih) koji je javno dostupan
         - liste javno dostupnih resursa su slabo razvijene
         - retko se koriste
     - parametarski entiteti - entiteti koji se definisu za potrebe DTD-a a ne XML dokumenta
-        - opsti oblik: \<!ENTITY % ime "vrednost"> ili \<!ENTITY % ime "vrednost">
+        - opsti oblik: `<!ENTITY % ime "vrednost">` ili `<!ENTITY % ime "vrednost">`
     - neparsirani entiteti - fajlovi koji sadrze ne-XML podatke
-        - opsti oblik \<!ENTITY naziv PUBLIC "pubid" notacija> ili \<!ENTITY naziv SYSTEM "sysid" notacija>
+        - opsti oblik `<!ENTITY naziv PUBLIC "pubid" notacija>` ili `<!ENTITY naziv SYSTEM "sysid" notacija>`
         - referenca na neparsirani entitet može se naći samo kao vrednost atributa tipa ENTITY
         - notacija predstavlja dodatnu informaciju za XML aplikaciju kako da rukuje podacima iz neparsiranog entiteta
 - **deklaracija notacije**
     - notacija = pomocni podaci za XML aplikaciju prilikom rukovanja sa neparsiranim entitetima
-    - opsti oblik \<!NOTATION naziv PUBLIC "pubid"> ili \<!NOTATION naziv SYSTEM "sysid">
+    - opsti oblik `<!NOTATION naziv PUBLIC "pubid">` ili `<!NOTATION naziv SYSTEM "sysid">`
     - nema standarda niti preporuke kako treba da izgledaju notacije, sve je stvar aplikacije
 - **povezivanje XML dokumenta sa DTD-om**
     - takozvani prolog XML dokumenta sadrzi
         - XML deklaraciju
         - deklaraciju tipa dokumenta koja povezuje dokument sa DTD-om
-    - opsti oblik \<!DOCTYPE koren (PUBLIC "pubid" | SYSTEM) "sysid" [\<!-- interne deklaracije -->]>
+    - opsti oblik `<!DOCTYPE koren (PUBLIC "pubid" | SYSTEM) "sysid" [<!-- interne deklaracije -->]>`
     - uslovne sekcije INCLUDE i IGNORE
+
+
 ## XML Namespaces
 - svako moze da definise sopstvenu XML gramatiku
 - ukoliko zelimo da koristimo razlicite gramatike moze doci do poklapanja imena
@@ -263,18 +286,18 @@ taga
         - lakse je napraviti jedinstveni URL (npr. firma vec poseduje domen)
         - zloupotreba tudjeg domena se ne moze izbeci, izbegavaju se slucajne kolizije
         - DTD se moze postaviti na taj URL i time uciniti javno dostupnim
-        - koristi se puna adresa (http://www.mojafirma.com/primer ≠ http://mojafirma.com/primer)
+        - koristi se puna adresa (`http://www.mojafirma.com/primer` ≠ `http://mojafirma.com/primer`)
     - identifikator prostora imena ne mora da nosi nikakvo znacenje
-    - http://www.mojafirma.com/primer:name je predugacko i nezgrapno (moze da narusi pravila imena)
+    - `http://www.mojafirma.com/primer:name` je predugacko i nezgrapno (moze da narusi pravila imena)
 - **kvalifikovano ime** (qualified name, QName)
     - lokalno ime + namespace
     - umesto punog naziva namespace-a, koristi se prefiks (XML dozvoljen)
     - prefiks se povezuje sa svojim prostorom imena
     - ime prefiksa vise nije bitno
-    - primer: xmlns:pers="http://www.ftn.ns.ac.yu/dtds/person.dtd"
+    - primer: `xmlns:pers="http://www.ftn.ns.ac.yu/dtds/person.dtd"`
     - **podrazumevani** prostor imena
         - njegovi elemeni se navode bez prefiksa
-        - primer xmlns="http://www.ftn.ns.ac.yu/dtds/person.dtd"
+        - primer `xmlns="http://www.ftn.ns.ac.yu/dtds/person.dtd"`
     - u jednom dokumentu moze se koristiti vise prostora imena
         - prefiksi imaju znacenje samo u *okviru*(element + podelementi) elementa u kom se nalaze
         - namespace mozemo iskljuciti xmlns=""
@@ -289,6 +312,7 @@ taga
     - DTD ne podrzava namespaces potpuno
     - elementi se moraju definisati sa prefiksom koji je unapred fiksan
     - namespace deklaracije se tretiraju kao atributi (nije svejedno gde deklarisemo namespace)
+
 
 ## XML Schema
 - sta nije dobro kod DTD?
@@ -307,13 +331,13 @@ taga
         - nema patent ili druge restrikcije
 - povezivanje šeme sa dokumentom
     - standardni XML Instance namespace
-        - identifikator je http://www.w3.org/2001/XMLSchema-instance
+        - identifikator je `http://www.w3.org/2001/XMLSchema-instance`
         - uobicajeni prefiks je *xsi*
         - cetiri atributa (*xsi:type, xsi:nil, xsi:schemaLocation, sxi:noNamespaceSchemaLocation*)
     - atribut *xsi:schemaLocation* oznacava lokaciju seme koja se definise za dati dokument
         - identifikator namespace-a + adresa fajla
     - atribut *xsi:noNamespaceSchemaLocation* oznacava lokaciju seme za default namespace
-    - *target namespace* u *\<schema>* elementu
+    - *target namespace* u `<schema>` elementu
         - u XSD fajlu targetNamespace atribut treba da gadja URL namespace
         - default moze da bude XMLSchema a moze i targetNamespace
         - ako ne se navede targetNamespace nema prefiksa i sve pripada default namespace-u
@@ -339,7 +363,7 @@ taga
     - **lista**
         - tip koji definisemo predstavljace listu elemenata nekog tipa
         - elementi liste su razdvojeni razmacima
-        - primer: *\<bingo>4 9 12\</bingo>*
+        - primer: `<bingo>4 9 12</bingo>`
         - nije moguce napraviti listu u listi niti listu slozenih tipova
         - *facet*-i (length, minLength, maxLength, enumeration, pattern)
     - **unija**
@@ -382,22 +406,106 @@ taga
     - validacija se moze primeniti na ceo dokument ili na pojedinacne elemente
     - *lax* validacija - validator ne proverava one elemente za koje ne postoji sema
     - *strict* validacija - svi elementi moraju imati semu i biti validni po njoj
-    - element *\<xsd:include>*
+    - element `<xsd:include>`
         - pristup delovima drugih sema
         - ove seme kojima se pristupa moraju imati isti targetNamespace
         - ukoliko ukljucena sema nema namespace preuzece ga od seme u kojoj se koristi
         - isto kao da smo sve stavili u jedan fajl
-    - element *\<xsd:import>* sluzi za seme koje imaju razliciti targetNamespace
-    - elementi <xsd:include> i <xsd:import> moraju se nalaziti ispred deklaracija elemenata/atributa i definicija tipova u šema dokumentu
-    - *\<any>* je bilo koji element
+    - element `<xsd:import>` sluzi za seme koje imaju razliciti targetNamespace
+    - elementi `<xsd:include>` i `<xsd:import>` moraju se nalaziti ispred deklaracija elemenata/atributa i definicija tipova u šema dokumentu
+    - `<any>` je bilo koji element
         - omogucava dodavanje elemenata koji ne definise data sema
         - postavljanjem atributa namespace mozemo joj dodeliti namespace (any, targetNamespace, other, local, URL)
-    - *<\anyAttribute>* analogno *any* samo za atribute
+    - `<\anyAttribute>` analogno *any* samo za atribute
 - zamena elemenata
     - moguce je da se element Y u dokumentu nadje umesto elementa X
     - X se zove *head*
-    - primer <xsd:element name="X" type="xsd:string"/>
+    - primer: 
+        - `<xsd:element name="X" type="xsd:string"/>`
+        - `<xsd:element name="Y" substitutionGroup="X" type="xsd:string"/>`
+    - svi elementi koji pripadaju grupi moraju biti globalni
+    - tip elementa zamene mora biti ili jednak tipu glave ili izveden iz njega
+    - ako se prilikom deklarisanja tipa zamene ne navede tip, podrazumeva se tip glave
+    - zabrana zamene radi se pomocu atributa `block="substitution"`
+    - zamena elementa je tranzitivna
+    - zamena elementa nije simetricna
+- anotacija
+    - element `<xsd:annotation>` sluzi za dokumentovanje seme
+        - podelement `<xsd:documentation>` - za coveka
+        - podelement `<xsd:appinfo>` - za masinu
+    - mogu se smestiti ispred svake globale komponente i na pocetku lokalnih
+    - `<xsd:documentation>` ima dva atributa
+        - *source*: URL do fajla sa dodatnim podacima
+        - *xml:lang*: jezik na kome je napisana dokumentacija
+    - `<xsd:appinfo>` ima samo atribut *source*
+- **jedinstvenost**
+    - sadrzaj elementa moze biti jedinstven (*unique*)
+    - vrednosti atributa koji nisu tipa ID mogu biti jedinstvene
+    - kombinacija sadrzaja elemenata i atributa moze biti jedinstvena
+    - moze se definisati opseg u kome se proverava jedinstvenost
+    - element `<unique>` ima istu strukturu kao i `<key>` element
+    - validator ce proveriti da li su oznacene vrednosti jedinstvene ako postoje
+- **kljucevi**
+    - pravi se razlika izmedju jedinstvene vrednost (*unique*) i kljuca (*key*)
+    - *key* je element, atribut ili kombinacija vise njih koja:
+        - uvek postoji (minOccurs>0)
+        - ne moze biti nillable
+        - je *unique* po vrednosti
+    - element `<key>`
+        - mora biti smesten unutar elementa posle definicije sadrzaja i deklaracije atributa
+        - podelement `<selector>` odredjuje skup elemenata na koje se kljuc odnosi (opseg)
+        - podelement `<field>` odredjuje atribut ili element cija vrednost predstavlja kljuc (ponovljiv)
+        - identifikuju se [*XPath*-om](#xpath)
+    - **referenciranje kljuceva**
+        - element oznacen pomocu `<keyref>` mora sadrzati vrednost nekog atributa *key*
+        - broj i tip polja u referenci na kljuc mora odgovarati broju i tipu polja u kljucu
+        - polozaj odredjuje opseg jedinstvenosti
+- **konflikt imena**
+    - isto ime moze da se koristi za vise razlicitih elemenata
+    - postoje situacije kada koriscenje istog imena nije dozvoljeno
+    - imena komponenti koje se nalaze u semi su smestena u prostore simbola (*symbol space*)
+    - *symbol space* odvojen za
+        - definicije tipova, deklaracije elemenata i atributa
+        - globalne komponente seme i svaki definisani tip
+    - dozvoljeno
+        - isto ime u različitim symbol spaces
+        - isto ime u različitim namespaces
+        - isto ime, isti symbol space, isti tip
+    - zabranjeno
+        - isto ime, isti symbol space, različit tip
+- *namespace* ima sledece karakteristie koje ga razlikuju od *symbol space*
+    - samo globalni elementi su u namespace-u
+    - lokalni elementi su povezani (associated) sa globalnim
+    - može postojati više atributa sa istim imenom
+    - nisu smešteni svi u namespace, već su povezani sa elementima koji su u namespace-u
+- kvalifikovanje elemenata
+    - lokalni elementi formalno ne spadaju u targetNamespace ali su u njemu preko svoje veze sa globalnim elementima
+    - element je kvalifikovan ako je asociran sa *namespace*-om
+    - `elementFormDefault="qualified"` - svi elementi mogu biti kvalifikovani
+    - `elementFormDefault="unqualified"` - samo globalni elementi mogu biti kvalifikovani
 
-    
 
 
+## StAX
+## SAX
+## DOM
+## JAXB
+
+## XPath
+- Kvalifikacija elemenata u XPath izrazima
+    - ako je elementFormDefault="qualified" elementi u XPath izrazima se moraju valifikovati, čak i kada je targetNamespace ujedno i default namespace
+    - ako je elementFormDefault="unqualified" tada se elementi u XPath izrazima ne kvalifikuju
+
+## XQuery
+## CSS
+## XSLT
+## XSL-FO
+## RDF
+## RDFS
+## SPARQL
+## Biznis procesi
+## SOA
+## SOAP
+## WSDL
+## UDDI
+## Mikroservisi
