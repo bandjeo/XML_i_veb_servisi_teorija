@@ -935,7 +935,7 @@ characters(), processingInstructions()*
     - upotreba parametra `<td width="{$width}" bgcolor="{$bgColor}">`
     - poziv sa parametrom
         - `<xsl:call-template name="addTableCell">`
-        -   `<xsl:with-param name="width" select="100"/>`
+        - &nbsp;&nbsp;`<xsl:with-param name="width" select="100"/>`
         - `</xsl:call-template>`
 - **promenljive**
     - definisanje `<xsl:variable name="x"/>`
@@ -947,10 +947,172 @@ characters(), processingInstructions()*
         - različiti šabloni mogu imati promenljive istog imena
     - globalna promenljiva - dete `<xsl:stylesheet>` elementa
         - vidljiva u svim šablonima koji se nalaze posle njene definicije
-        
-
-    
+         
 ## XSL-FO
+- XML jezik za opis formatiranja straničnih dokumenata
+    - radi sa konceptima oblikovanja i raspoređivanja elemenata na stranice
+    - originalni XML dokument se mora transformisati u XSL-FO da bi bio prikazan
+        - za transformaciju može da se koristi XSLT
+    - samo po sebi XSL-FO je XML dokument
+    - sadrži opis rasporeda elemenata na stranicama
+    - za njegov prikaz potreban je poseban softver za renderovanje
+    - najčešće se renderovanje oslanja na neke od rasprostranjenih formata tako što se XSL-FO dokument konvertuje u drugi format (*PDF*, *PostScript*, *PCL(HP)*, *SVG*)
+        - XSL-FO *renderer*
+- **osnovni pojmovi**
+    - *page layout* - raspored stranice
+        - fizičke dimenzije, margine, zaglavlje/podnožje, brojevi stranica, itd
+    - *block* - površina koju zauzima neki objekat
+        - pasus, reč, naslov, slika
+    - *inline* - parče teksta koje se prostire u jednom redu
+- **Simple page master**
+    - XSL-FO može da opiše izgled stranice za stranične medije (štampa) i ne-stranične, kontinualne medije (web)
+    - ne-stranični mediji
+        - tretiraju se kao mediji sa jednom velikom (dugačkom) stranicom
+        - na tu stranicu se gleda kroz prozor, tzv. *viewport*
+        - koncepti isecanja (*clipping*), pomeranja prozora (*scrolling*)
+    - za stranične medije o ovim detaljima se ne mora voditi puno računa
+    - definicija osnovnih parametara
+        - `<fo:simple-page-master`
+        - &nbsp;&nbsp;`master-name="simple"`
+        - &nbsp;&nbsp;`page-height="29.7cm"`
+        - &nbsp;&nbsp;`page-width="21cm"`
+        - &nbsp;&nbsp;`margin-top="1cm"`
+        - &nbsp;&nbsp;`margin-bottom="2cm"`
+        - &nbsp;&nbsp;`margin-left="2.5cm"`
+        - &nbsp;&nbsp;`margin-right="2.5cm">`
+    - atributi iz skupa *common margin properties - block*
+        - `margin-top`
+        - `margin-bottom`
+        - `margin-left`
+        - `margin-right`
+        - `space-before`
+        - `space-after`
+        - `start-indent`
+        - `end-indent`
+    - regioni stranice
+        - `<fo:simple-page-master ...>`
+        - &nbsp;&nbsp;`<fo:region-body margin-top="1cm"/>`
+        - &nbsp;&nbsp;`<fo:region-before extent="3cm"/>`
+        - &nbsp;&nbsp;`<fo:region-after extent="1.5cm"/>`
+        - &nbsp;&nbsp;`<fo:region-start extent="2cm"/>`
+        - &nbsp;&nbsp;`<fo:region-end extent="2cm"/>`
+        - `</fo:simple-page-master>`
+    - svaki region ima svoje ime
+        - ako se ime ne definiše, koristi se podrazumevano ime
+    - objekti se dodeljuju regionima preko imena regiona
+    - regioni stranice na obodima se dimenzionišu u odnosu na ivicu
+    - region `xsl-region-body` (centralni region) ima sopstvene margine
+        - one definišu i veličinu i položaj regiona
+        - mere se u odnosu na ivicu stranice
+        - nema garancije da se ovaj region neće preklapati sa ivičnim regionima (da bi se to izbeglo, njegove margine moraju biti jednake ili veće od dimenzija ivičnih regiona)
+    - atribut `writing mode`: način pisanja teksta
+        - `lr-tb` (left-to-right, top-to-bottom) ~ evropski jezici
+        - `rl-tb` (right-to-left, top-to-bottom) ~ semitski jezici
+        - `tb-rl` (top-to-bottom, right-to-left) ~ dalekoistočni jezici
+    - atribut `reference-orientation` definiše gde je vrh strane
+    - popunjavanje mastera sadržajem
+        - sadržaj se nalazi u `<fo:page-content>` elementu
+        - sadržaj je grupisan u tokove (*flows*)
+        - `<fo:static-content>` - statički sadržaj koji se ponavlja (npr. zaglavlje)
+        - `<fo:flow>` - sadržaj koji se ne ponavlja kada se jednom iskoristi
+- **Page sequence master**
+    - niz različitih formata stranice
+        - svaki od tih formata se definiše kao simple page master
+    - nizanje različitih mastera na više načina
+    - `single-page-master-reference` - dati master će se iskoristiti za tačno jednu stranicu
+    - `repeatable-page-master-reference` - dati master će se upotrebiti za onoliko stranica dok se ne potroši tekući *flow* ili za unapred dati maksimalan broj stranica
+    - `repeatable-page-master-alternatives` - izbor jednog od mastera zavisno od nekog uslova
+        - svaki podelement je referenca na jedan master
+        - za svaki podelement je vezan logički uslov (prvi podelement koji ima ispunjen uslov biće iskorišćen za popunu sadržajem)
+        - uslovi se izražavaju pomoću tri atributa
+            - `page-position`: `first` (prva strana), `last` (poslednja) `rest` (sve ostale), `any` (bilo koja)
+            - `odd-or-even`: `odd` (neparna), `even` (parna), `any` (bilo koja)
+            - `blank-or-not-blank`: `blank` (prazna), `not-blank` (nije prazna), `any` (bilo koja)
+- **Page sequence**
+    - predstavlja skup sadržaja obuhvaćenih elementom `<fo:page-sequence>`
+    - atributi elementa `<fo:page-sequence>`
+        - `master-reference` - ime mastera koji će se primeniti
+        - `initial-page-number` - određuje broj prve stranice - `auto`, `auto-odd`, `auto-even`, konkretan broj
+        - force-page-count - koliki je ukupan broj stranica - `auto`, `even`, `odd`, `end-on-even`, `end-on-odd`, `no-force`
+        - `language` - jezik teksta
+        - `country` - država u kojoj se objavljuje dokument
+- Prikazani sadržaj čine objekti (*objects*)
+    - oni zauzimaju prostor koji se izražava pomoću pojmova
+        - površine (*area*)
+        - bloka (*block*)
+        - reda (*inline*)
+- **Area**
+    - *area* - pravougaona površina koja ima skup osobina
+        - osobine (*traits*) imaju konkretne vrednosti koje odredi XSL-FO renderer
+        - atributi (*attributes*) nisu osobine - oni predstavljaju ograničenja u okviru kojih se određuju vrednosti osobina
+    - svaka površina se sastoji iz
+        - *content rectangle*: deo za sadržaj
+        - *padding rectangle*: prostor za odvajanje sadržaja od okvira
+        - *border rectangle*: okvir
+    - vrste površina
+        - *inline area*: parče teksta, ubačena slika (inline površine se nižu jedna za drugom u pravcu `inline-progression-direction`)
+        - *block area*: pasus, tabela, lista, ... (block površine se nižu jedna za drugom u pravcu `block-progression-direction`)
+        - *glyph area*: jedno slovo
+        - *region reference area*: svaki od pet regiona je i površina
+    - pozicioniranje površina - određeno atributima
+        - `break-before: auto, column, page, odd-page, even-page`
+        - `break-after`
+        - `keep-with-previous.within-line`: `auto`, `always`, *broj* (mera jačine ograničenja)
+        - `keep-with-previous.within-column`
+        - `keep-with-previous.within-page`
+        - `keep-with-next`
+        - `keep-together`
+    - dimenzije
+        - `inline-progression-dimension`
+        - `block-progression-dimension`
+        - mogu se eksplicitno postaviti samo za reference areas i slike
+    - nizanje blok površina
+        - `space-above`: `.minimum`, `.maximum`, `.optimal`
+        - `space-below`
+        - `precedence`: broj ili force (jačina ograničenja)
+        - `conditionality`: `discard`, `retain` (kada nema susedne površine u istoj referentnoj površini)
+- **Block**
+    - osnovna gradivna jedinica za sadržaj na stranici
+        - npr. pasus, tabela, lista, slika
+    - blok se sastoji od jedne ili više površina
+    - blok sadrži
+        - druge blokove
+        - jednolinijske fragmente (inline)
+        - tekst
+    - prelazak na novu stranicu
+        - `break-before`: `auto`, `column`, `page`, `even-page`, `odd-page`
+        - `break-after`
+    - uvlačenje bloka
+        - `padding-before`, `padding-after`,` padding-start`, `padding-end`
+- *Lista*
+    - lista je vrsta bloka
+    - struktura: `<fo:list-block>` => `<fo:list-item>` => `<fo:list-item-label>` ^ `<fo:list-item-body>`
+- *Tabela*
+    - tabela je vrsta bloka
+    - struktura: `<fo:table>` => `<fo:table-header>` ^ `<fo:table-body>` => `<fo:table-row>` => `<fo:table-cell>`
+    - tabela i potpis `<fo:table-and-caption>` => `<fo:table-caption text-align="center">` ^ `<fo:table>`
+- **Inline**
+    - jednolinijski fragmenti
+        - *bold*, *italic*, itd.
+- *Slike*
+    - slike su inline elementi
+        - ako je potrebno mogu se obuhvatiti u block
+    - mogu se ubaciti na dva načina
+        - kao eksterni ne-XML sadržaj (npr. JPEG slika) `<fo:external-graphic src="url(images/pic.jpg)">`
+        - kao eksterni XML sadržaj (npr. SVG slika) `<fo:instream-foreign-object src="url(images/pic.svg)"`
+- *Boja*
+    - definisanje boje
+        - po imenu: `red`, `blue`, ...
+        - RGB model: `#rrggbb` ili `#rgb`
+        - po imenu koje je specifično za konkretnu rač. platformu
+        - drugi modeli za koje postoji ICC profil `<fo:declarations>` => `<fo:color-profile src="url('./myprofile.icc')" color-profile-name="mycp"/>`
+            - `<fo:block color='icc-color(200, 200, 50, mycp, 1.45, 2.22)'>`
+- *Fontovi*
+    - XSL-FO usvaja OpenType model fonta
+    - atributi: `font-family, font-style, font-variant, font-weight, font-stretch, font-size`
+    - font mora biti dostupan XSL-FO procesoru
+- *Linkovi* - element `<fo:basic-link>`
+    
 ## RDF
 ## RDFS
 ## SPARQL
