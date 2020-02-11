@@ -1,1 +1,242 @@
-# XML_i_veb_servisi_teorija
+# XML i veb servisi
+
+## Sadrzaj
+- [Inzenjering dokumenata](#inzenjering-dokumenata)
+- [Markup jezici i XML](#markup-jezici-i-xml)
+- [Document Type Definition (DTD)](#document-type-definition)
+
+## Inzenjering dokumenata
+
+- dokumenti i poslovni procesi
+- analiza, dizajn i implementacija informacionih sistema
+    - smanjeno vreme troskova
+    - integracija i interoperabilnost
+- **dokument**: fiksna i strukturirana kolicina informacija kojom se upravlja kao jedinicom i koja se razmnenjuje kao jedinica izmedju korisnika i sistema
+    - zivotni ciklus
+    - jako strukturirani - slabo strukturirani
+    - sadrzaj + struktura + prezentacija (ref="XML.pdf/15")
+- **identifikator** je objekat(skup metapodataka) koji moze da sluzi kao referenca na nesto sto ima identitet
+- **poslovni proces** je skup aktivnosti(transformacija) ulaz -> izlaz -> cilj
+    - rucno ili automatski
+- **sistemi za upravljanje dokumentima** upravljaju zivotnim ciklusom dokumenta
+    - rad sa dokumentima
+    - rad sa metapodacima
+    - indeksiranje i pretraga dokumenata
+    - definisanje poslovnih procesa
+    - saradnja izmedju korisnika
+    - upravljanje verzijama dokumenta
+    - bezbednost
+    - integracija sa drugim sistemima
+- Za implementaciju sistema za upravaljanje dokumentima koriste se**sistemi za upravljanje radnim tokovima**
+    - dokument kao centar radnog toka
+    - definisanje, izvrsavanje i nadgledanje radnih tokova
+    - bazirani na dokumentima
+- **resurs** moze biti bilo sta sto ima identitet
+    - npr: elektronski dokument, slika, servis, kolekcija resursa
+    - informacioni resursi se mogu preneti u poruci
+    - neinformacioni resursi su oni drugi
+- **reprezentacija resursa** je informacija koja reflektuje proslo, trenutno ili zeljeno stanje resursa, u formatu koji moze da se lako komunicira putem protokola i koja se sastoji iz skupa reprezentactionih metapodataka i potencijalno neogranicenim tokom reprezentacionih podataka
+    - svaki resurs moze da ima vise reprezentacija
+- **URI (Uniform resource identifier)** je niz znakova za identifikovanje apstraktnih ili fizickih resursa
+    - URL, URN, ili oba
+    - URI sema definise prostor imena identifikatora i moze dalje da ogranici sintaksu i semantiku identifikatora
+- **URL (Uniform resource locator)** je podskup URI koji identifikuje resurse preko reprezentacije njihovog primarnog mehanizma pristupa
+- **URN (Uniform resource name)** je podskup URI koji mora ostati globalno jedinstven i perzistentan cak i ako resurs prestane da postoji ili postane nedostupan
+- **HTTP**
+    - sigurne metode (ne menjaju stanje servera)
+    - idempotentne metode (vise identicnih zahteva ima isti efekat kao jedan)
+    - kodovi:
+        - 1xx - info
+        - 2xx - success
+        - 3xx - redirect
+        - 4xx - client error
+        - 5xx - server error
+- **informacioni set** skup elemenata i njihovih veza (stablo)
+    - **RDF** graf (vise o tome kasnije :)
+
+## Markup jezici i XML
+- **markup** (tag, code) oznaka koja opisuje deo sadrzaja
+    - koriscen i na papiru (naslov, citati...)
+    - ne predstavlja sadrzaj
+    - uputstvo kako obraditi sadrzaj
+    - ne prikazuje se eksplicitno (krajnji korisnik ne vidi markup tagove)
+    - ako se korisiti za definisanje prezentacije dokumenta vidljiv (broj poglavlja, naslov, broj strane)
+    - definisu ih:
+        - firme
+        - otvoreni standardi
+    - rad se vise markup istovremeno je tehnicki komplikovan i trazi puno rucnog rada
+    - korišćenje otvorenih standarda bi trebalo da pojednostavi razmenu podataka između razlicitih sistema, softvera i/ili ucensnika u proizvodnji sadrzaja
+    - nejasan markup (osnovni razlozi nastanka su fokus na prikaz dokumenta i ogranicenost na spostveni, zatvoren sistem)
+    - otvoreni standardi za markup se fokusiraju na markiranje *strukture* i *znacenja*
+- **HTML**
+    - hijerarhija elemenata
+    - unapred definisani tagovi
+    - definisan pomocu XML-a
+- **XML** (eXtensible Markup Language)
+    - ne definise tagove unapred (korisnik ih sam definise)
+    - jezik za definisanje markup jezika
+    - ciljevi
+        - da odgovara upotrebi na Internetu
+        - mogućnost korišćenja od strane različitih aplikacija
+        - (jednosmerna) kompatibilnost sa SGML-om (Standard Generelized Markup Language)
+        - da se programi za obradu XML dokumenata pišu lako
+        - jednoznačnost prilikom obrade XML dokumenata
+        - XML dokumenti čitki i rezonski jasni
+        - dizajn XML-a se vrši brzo
+        - dizajn XML-a je formalan i koncizan
+        - kreiranje XML dokumenata je lako
+        - konciznost je od minimalne važnosti
+    - familija standarda
+        - XSL (Extensible Stylesheet Language)
+            - XSLT (Transformations)
+            - XSL-FO (Formatting Objects)
+        - XPath (oznacavanje strukture)
+        - XLink (povezivanje)
+        - XQuery (pretrazivanje)
+- **element** je cvor u hijerarhijskoj strukturi dokumenta (moze sadrzati druge cvorove)
+    - **tag** je tekstualna oznaka (markup) za pocetak ili kraj elementa
+        - pocenti (otvarajuci) tag \<tag>
+        - zavrsni (zatvarajuci) tag \</tag>
+    - **sadrzaj** elementa se nalazi izmedju pocetnoh i zavrsnog taga
+        - tekst
+        - podelementi
+        - mesavina
+        - prazan
+    - ako je prazan moze da se spoji \<tag/>
+    - element moze da ima atribute
+- **atribut**
+    - naziv
+    - sadrzaj (nestrukturiran tekst)
+    - najcesce se smatrja posebnim cvorom stabla
+- dobro formirani XML dokument (moze masinski da se obradi)
+    - ima jedan korenski element
+    - elementi se mogu ugnjezdavati ali ne i preklapati
+    - vrednosti atributa moraju biti unutar navodnika
+    - element ne moze imati dva atributa sa istim imenom
+    - komentari i procesne instrukcije se ne smeju nalaziti unutar
+taga
+- generalna pravila
+    - elementi - podaci; kada nismo sigurni; lakse se prilagode
+    - atributi - metapodaci; ne mogu se strukturirati
+- davanje imena elementima i atributima
+    - case sensitive
+    - slova, cifre, "_", "-", ":" i "."
+    - mora poceti sa slovom ili "_"
+    - ne sme poceti sa *xml*
+- ostali delovi XML dokumenta
+    - **komentari**
+        - navode se izmedju \<!-- i --\>
+        - ignorisu se kao sadrzaj (ne prikazuju se, ne obradjuju se programski)
+        - bilo gde izvan taga
+    - **procesne instrukcije**
+        - navode se izmedju \<? i ?>
+        - predstavljaju instrukcije softveru
+        - nisu namenjene krajnjem korisniku (čoveku)
+        - nisu deo sadržaja dokumenta
+        - mogu se nalaziti bilo gde izvan taga
+        - xml deklaracija na pocetku dokumenta \<?xml **version**="1.0" **encoding**="utf-8" **standalone**="yes"?>
+    - **entiteti**
+        - ugradjeni (unapred definisani)
+        - \&lt; = &lt;
+        - \&amp; = &amp;
+        - \&gt; = &gt;
+        - \&quot; = &quot;
+        - \&apos; = &apos;
+    - **CDATA sekcije**
+        - navode se izmedju \<![CDATA[i]]>
+        - sadrzi tekst koji se interpretira direktno, bez zamene entiteta
+
+## Document Type Definition
+- **DTD** fajl (dokument) opisuje format klase/familije/tipa XML dokumenata
+    - koji elementi i entiteti se mogu pojaviti na kom mestu u dokumentu
+    - sta je sadrzaj element i atributa
+    - dokument je validan ako odgovara svom DTD-u
+- **deklaracija elementa**
+    - opsti oblik \<!ELEMENT naziv (specifikacija_sadržaja)>
+    - naziv postuje pravila imena elemenata i atributa
+- **specifikacija sadrzaja elementa**
+    -  #PCDATA
+        - sadrzaj elementa je tekst, bez podelemenata
+        - tekst je parsiran (reference na entitete su razresene)
+        - primer \<!ELEMENT phone_number (#PCDATA)>
+    - sekvenca podelemenata
+        - podelementi se razdvajaju zarezom
+        - uz naziv podelementa navodi se oznaka broja ponavljanja 
+            - ? = (0..1)
+            - \* = (0..∞)
+            - \+ = (1..∞)
+            - podrazumevano = (1..1)
+        - redosled i broj ponavljanja podelemenata su bitni
+        - primer: \<!ELEMENT name (first_name, last_name?)>
+    - izbor
+        - podelementi se razdvajaju uspravnom crtom
+        - izbor moze obuhvatati 2+ podelementa
+        - primer: \<!ELEMENT methodResponse (params | fault)>
+    - upotreba zagrada
+        - sekvence, izbori i sufiksi se mogu kombinovati
+    - mesani sadrzaj
+        - element sadrzi i tekst i podelemente
+        - definise se kao izbor ciji prvi element je #PCDATA, ostali lementi su moguci podelementi, a cela grupa ima broj ponavljanja \*
+        - primer: \<!ELEMENT definition (#PCDATA | term)*>
+        - nije moguce navesti broj niti redosled ponavljanja podelemenata i teksta
+        - deklaracija mesanog sadrzaja se ne moze koristiti za dalje grupisanje
+    - prazan sadrzaj
+        - kljucna rec *EMPTY*
+        - primer: \<!ELEMENT img EMPTY>
+    - bilo kakav sadrzaj
+        - oznacava se kljucnom reci *ANY*
+        - uključuje tekst, podelemente, isti element ponovljen rekurzivno
+        - nalik mešanom sadržaju bez fiksirane liste podelemenata
+        - podelementi koji se pojavljuju u sadržaju moraju biti deklarisani
+        - u praksi se koristi samo u toku razvoja DTD-a
+        - primer: \<!ELEMENT page ANY>
+- **deklaracija atributa**
+    - opsti oblik: \<!ATTLIST imeElementa imeAtr tipAtr default>
+    - naziv atributa mora da odgovara pravilima za formiranje imena
+    - tip atributa se bira iz konačnog skupa
+    - obaveznost atributa se bira iz konačnog skupa
+    - jedna deklaracija može da obuhvati više atributa jednog elementa
+        - u praksi se svi atributi jednog elementa stavljaju u jednu deklaraciju
+        - u praksi se deklaracija atributa navodi odmah ispod deklaracije elementa
+    - moguci tipovi
+        - CDATA: bilo koji dobro formirani tekst
+        - NMTOKEN: XML name token
+        - NMTOKENS: jedan ili više NMTOKEN-a razdvojenih razmacima
+        - nabrajanje mogućih vrednosti (delimiter "|")
+        - ID: string koji je XML ime i jedinstven je u okviru celog dokumenta (samo jedan ID po elementu)
+        - IDREF: postojeca vrednost ID atributa nekog elementa u istom dokumentu
+        - IDREFS: niz IDREF vrednosti razfvojenih razmakom
+        - ENTITY: ime neparsiranog entiteta koje je deklarisan u DTD-u
+        - ENTITIES: više ENTITY vrednosti razdvojenih razmakom
+        - NOTATION: sadrži ime notacije koja je deklarisana u DTD-u
+    - obaveznost pojavljivanja atributa
+        - \#IMPLIED: atribut nije obavezan; može se navesti ali i ne mora
+        - \#REQUIRED: atribut je obavezan; mora se navesti
+        - \#FIXED "value" : atribut nije obavezan, ali se smatra da uvek postoji u elementu i da ima datu fiksnu vrednost value; ako se eksplicitno navede u elementu, mora imati baš tu vrednost
+        - "default": atribut, ako se ne navede, ima podrazumevanu vrednost default datu pod navodnicima
+- **deklaracija entiteta** - pored predefinisanih, moguce je deklarisati nove
+    - opsti oblik \<!ENTITY naziv "sadržaj">
+    - svaki "naziv" u dokumentu bice zamenjeno sadrzajem, prilikom parsiranja (ucitavanja) XML dokumenta
+    - sadrzaj entiteta moze da sardzi druge entitete (bez rekurzije)
+    - eksterni entitet - smesten u posebnom fajku, izvan DTD-a
+        - opsti oblik eksternog: \<!ENTITY naziv SYSTEM "adresa_fajla">
+    - moze imati javni identifikator \<!ENTITY name PUBLIC "pubid" SYSTEM "sysid">
+        - javni identifikator može da identifikuje dobro poznati resurs (iz liste takvih) koji je javno dostupan
+        - liste javno dostupnih resursa su slabo razvijene
+        - retko se koriste
+    - parametarski entiteti - entiteti koji se definisu za potrebe DTD-a a ne XML dokumenta
+        - opsti oblik: \<!ENTITY % ime "vrednost"> ili \<!ENTITY % ime "vrednost">
+    - neparsirani entiteti - fajlovi koji sadrze ne-XML podatke
+        - opsti oblik \<!ENTITY naziv PUBLIC "pubid" notacija> ili \<!ENTITY naziv SYSTEM "sysid" notacija>
+        - referenca na neparsirani entitet može se naći samo kao vrednost atributa tipa ENTITY
+        - notacija predstavlja dodatnu informaciju za XML aplikaciju kako da rukuje podacima iz neparsiranog entiteta
+- **deklaracija notacije**
+    - notacija = pomocni podaci za XML aplikaciju prilikom rukovanja sa neparsiranim entitetima
+    - opsti oblik \<!NOTATION naziv PUBLIC "pubid"> ili \<!NOTATION naziv SYSTEM "sysid">
+    - nema standarda niti preporuke kako treba da izgledaju notacije, sve je stvar aplikacije
+- **povezivanje XML dokumenta sa DTD-om**
+    - takozvani prolog XML dokumenta sadrzi
+        - XML deklaraciju
+        - deklaraciju tipa dokumenta koja povezuje dokument sa DTD-om
+    - opsti oblik \<!DOCTYPE koren (PUBLIC "pubid" | SYSTEM) "sysid" [\<!-- interne deklaracije -->]>
+    - uslovne sekcije INCLUDE i IGNORE
