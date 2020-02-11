@@ -4,6 +4,8 @@
 - [Inzenjering dokumenata](#inzenjering-dokumenata)
 - [Markup jezici i XML](#markup-jezici-i-xml)
 - [Document Type Definition (DTD)](#document-type-definition)
+- [XML Namespaces](#xml-namespaces)
+- [XML Schema](#xml-schema)
 
 ## Inzenjering dokumenata
 
@@ -95,8 +97,8 @@
         - XQuery (pretrazivanje)
 - **element** je cvor u hijerarhijskoj strukturi dokumenta (moze sadrzati druge cvorove)
     - **tag** je tekstualna oznaka (markup) za pocetak ili kraj elementa
-        - pocenti (otvarajuci) tag \<tag>
-        - zavrsni (zatvarajuci) tag \</tag>
+        - pocenti (otvarajuci) tag ```<tag>```
+        - zavrsni (zatvarajuci) tag ```</tag>```
     - **sadrzaj** elementa se nalazi izmedju pocetnoh i zavrsnog taga
         - tekst
         - podelementi
@@ -125,16 +127,17 @@ taga
     - ne sme poceti sa *xml*
 - ostali delovi XML dokumenta
     - **komentari**
-        - navode se izmedju \<!-- i --\>
+        - navode se izmedju ```<!-- i --\>```
         - ignorisu se kao sadrzaj (ne prikazuju se, ne obradjuju se programski)
         - bilo gde izvan taga
     - **procesne instrukcije**
-        - navode se izmedju \<? i ?>
+        - navode se izmedju ```<? i ?>```
         - predstavljaju instrukcije softveru
         - nisu namenjene krajnjem korisniku (čoveku)
         - nisu deo sadržaja dokumenta
         - mogu se nalaziti bilo gde izvan taga
-        - xml deklaracija na pocetku dokumenta \<?xml **version**="1.0" **encoding**="utf-8" **standalone**="yes"?>
+        - xml deklaracija na pocetku dokumenta 
+        ```<?xml **version**="1.0" **encoding**="utf-8" **standalone**="yes"?>```
     - **entiteti**
         - ugradjeni (unapred definisani)
         - \&lt; = &lt;
@@ -240,3 +243,161 @@ taga
         - deklaraciju tipa dokumenta koja povezuje dokument sa DTD-om
     - opsti oblik \<!DOCTYPE koren (PUBLIC "pubid" | SYSTEM) "sysid" [\<!-- interne deklaracije -->]>
     - uslovne sekcije INCLUDE i IGNORE
+## XML Namespaces
+- svako moze da definise sopstvenu XML gramatiku
+- ukoliko zelimo da koristimo razlicite gramatike moze doci do poklapanja imena
+- resenje:
+    - uciniti da sva imena budu jedinstvena
+    - mozemo svakom elementu dodati prefiks (zavisno od toga gde su definisani)
+- skup elemenata sa istim prefiksom je **prostor imena** (namespace)
+    - prostor imena ≠ tip dokumenta
+    - jedan tip dokumenta moze ukljucivati elemente iz vise prostora
+    - jedan element moze biti koriscen u vise tipova dokumenata
+- koncept prefiksa nije dovoljno robustan
+    - vise ljudi moze da se odluci da koristi isti prefiks
+    - morala bi da postoji organizacija koja se bavi administarcijom prefiksa
+- koristimo postojeci sistem - internet
+    - prostori imena identifikuju se nazivom
+    - naziv = URI
+    - URL je pogodniji od URN
+        - lakse je napraviti jedinstveni URL (npr. firma vec poseduje domen)
+        - zloupotreba tudjeg domena se ne moze izbeci, izbegavaju se slucajne kolizije
+        - DTD se moze postaviti na taj URL i time uciniti javno dostupnim
+        - koristi se puna adresa (http://www.mojafirma.com/primer ≠ http://mojafirma.com/primer)
+    - identifikator prostora imena ne mora da nosi nikakvo znacenje
+    - http://www.mojafirma.com/primer:name je predugacko i nezgrapno (moze da narusi pravila imena)
+- **kvalifikovano ime** (qualified name, QName)
+    - lokalno ime + namespace
+    - umesto punog naziva namespace-a, koristi se prefiks (XML dozvoljen)
+    - prefiks se povezuje sa svojim prostorom imena
+    - ime prefiksa vise nije bitno
+    - primer: xmlns:pers="http://www.ftn.ns.ac.yu/dtds/person.dtd"
+    - **podrazumevani** prostor imena
+        - njegovi elemeni se navode bez prefiksa
+        - primer xmlns="http://www.ftn.ns.ac.yu/dtds/person.dtd"
+    - u jednom dokumentu moze se koristiti vise prostora imena
+        - prefiksi imaju znacenje samo u *okviru*(element + podelementi) elementa u kom se nalaze
+        - namespace mozemo iskljuciti xmlns=""
+    - prefiks se moze koristiti i ispred atributa
+        - aplikacija to interpretira po volji
+- sto se tice XML aplikacije je svejedno koji pristup koristimo:
+    - uvek koristiti prefiks
+    - koristiti jedan defaut namespace, ostali sa prefiksom
+    - svuda redefinisati namespace
+- namespace i DTD
+    - DTD je definisan pre XML Namespaces standarda
+    - DTD ne podrzava namespaces potpuno
+    - elementi se moraju definisati sa prefiksom koji je unapred fiksan
+    - namespace deklaracije se tretiraju kao atributi (nije svejedno gde deklarisemo namespace)
+
+## XML Schema
+- sta nije dobro kod DTD?
+    - ne-XML sintaksa, cudna
+    - slaba podrska za namespace
+    - nema tipizacije podataka (narocito lose za sadrzaj elementa)
+    - ogranicena prosirivost
+    - ogranicene mogucnosti za opisivanje strukture podataka
+        - ne može se nametnuti broj podelemenata bez nametanja redosleda
+        - ne može se nametnuti redosled i broj podelemenata kada se koristi mešani sadržaj
+- **XML Schema** je XML dokument koji opisuje strukturu drugih dokumenata
+    - prevazilazi mane DTD-a (DTD i dalje moze da se koristi)
+    - postoji vise standarda
+    - XML Schema standard propisuje W3C
+        - najrasireniji, najmocniji, najkomplikovaniji
+        - nema patent ili druge restrikcije
+- povezivanje šeme sa dokumentom
+    - standardni XML Instance namespace
+        - identifikator je http://www.w3.org/2001/XMLSchema-instance
+        - uobicajeni prefiks je *xsi*
+        - cetiri atributa (*xsi:type, xsi:nil, xsi:schemaLocation, sxi:noNamespaceSchemaLocation*)
+    - atribut *xsi:schemaLocation* oznacava lokaciju seme koja se definise za dati dokument
+        - identifikator namespace-a + adresa fajla
+    - atribut *xsi:noNamespaceSchemaLocation* oznacava lokaciju seme za default namespace
+    - *target namespace* u *\<schema>* elementu
+        - u XSD fajlu targetNamespace atribut treba da gadja URL namespace
+        - default moze da bude XMLSchema a moze i targetNamespace
+        - ako ne se navede targetNamespace nema prefiksa i sve pripada default namespace-u
+- cetiri osnovna elementa seme
+    - *xsd:element* deklarise element i dodeljuje mu tip
+    - *xsd:attribute* deklarise atribut i dodeljuje mu tip
+    - *xsd:simpleType* definise novi prosti tip
+    - *xsd:complexType* definise novi slozeni tip
+- deklaracija vs definicija
+    - deklarisanje - bice u instanci seme (elementi i atributi)
+    - definisanje - koriste se u okviru seme (tipovi, grupe atributa, itd.)
+- dekalracije mogu da budu ugnjezdene ili da se pozivaju na vec definisan tip
+- definicija tipa
+    - svaka deklaracija novog tipa se oslanja na neki od postojecih tipova
+    - postoje tipovi ugradjeni u XML Schema Part 2: Datatypes
+- **definicija novog prostog tipa**
+    - prosti tip ima samo vrednost
+    - novi prosti tipovi definisu se na osnovu postojecih - ugradjenih
+    - **restrikcija**
+        - skup mogucih vrednosti novog tipa je podskup vrednosti osnovnog
+        - navode se pomocu 12 *facet-a* (length, minLength, maxLength, pattern...)
+            - enumeration i pattern povezani sa or, ostali sa and
+    - **lista**
+        - tip koji definisemo predstavljace listu elemenata nekog tipa
+        - elementi liste su razdvojeni razmacima
+        - primer: *\<bingo>4 9 12\</bingo>*
+        - nije moguce napraviti listu u listi niti listu slozenih tipova
+        - *facet*-i (length, minLength, maxLength, enumeration, pattern)
+    - **unija**
+        - vrednost novog tipa moze biti vrednost bilo kog tipa koji je clan unije
+- **deklaracija atributa**
+    - atributi moraju biti prostog tipa
+    - uvek na kraju, posle elementa
+    - uvek ugnjezdeni u deklaraciju elementa kome pripadaju
+- **definicija slozenog tipa**
+    - slozeni tip pored vrednosti moze da ima atribute i podelemente
+    - za podelemente koristimo jedan od **modela sadrzaja** (*sequence*, *choice*, *all*)
+        - *minOccurs* i *maxOccurs* atributi svakog elementa odredjuju broj njegovog ponavljanja
+    - *sequence* je sekvenca podelemenata ili drugih modela sadrazaja
+        - redosled podelemenata je bitan
+        - broj pojavljivanja podelemenata je bitan
+        - cela sekvenca moze da se ponavlja (ima atribute minOccurs i maxOccurs)
+    - *choice* - izbor jednog od podelemenata
+    - *all* - neuredjeni skup
+        - u sadrzaju se mogu navesti podelementi u bilo kom redosledu
+        - svaki podelement se mora pojaviti tacno jednom
+        - ne moze da sadrzi sekvence ili izbore
+        - ne moze da bude ukljucen u sekvence ili izbore ili drugi *all*
+    - *mesani tip*
+        - attribut *mixed* ima vrednost *true*
+        - tekst moze biti isprepletan sa podelementima
+    - novi slozeni tip na osnovu postojeceh dobija se prosirivanjem ili restrikcijom
+    - slozen tip moze da bude apstraktan
+        - atribut *abstact="true"*
+        - ne mogu postojati njegove instance
+        - mogu postajti istance njegovih izvedenih tipova
+- **grupisanje elemenata**
+    - elementi se mogu grupisati
+    - grupa ima svoje ime i moze se referencirati na drugom mestu
+    - mora biti globalna i ne moze da ima atribute
+- *fixed*, *default* i *nil* vrednosti
+    - *fixed* i *defulat* omogucavaju da se navede prazan element
+    - *nil* - atribut *nillable="true"* odnosno *xsi:nil="true"*; nije isto sto i prazan element
+- **rad sa vise sema**
+    - dokument moze da sadrzi elemente iz razlicitih sema
+    - validacija se moze primeniti na ceo dokument ili na pojedinacne elemente
+    - *lax* validacija - validator ne proverava one elemente za koje ne postoji sema
+    - *strict* validacija - svi elementi moraju imati semu i biti validni po njoj
+    - element *\<xsd:include>*
+        - pristup delovima drugih sema
+        - ove seme kojima se pristupa moraju imati isti targetNamespace
+        - ukoliko ukljucena sema nema namespace preuzece ga od seme u kojoj se koristi
+        - isto kao da smo sve stavili u jedan fajl
+    - element *\<xsd:import>* sluzi za seme koje imaju razliciti targetNamespace
+    - elementi <xsd:include> i <xsd:import> moraju se nalaziti ispred deklaracija elemenata/atributa i definicija tipova u šema dokumentu
+    - *\<any>* je bilo koji element
+        - omogucava dodavanje elemenata koji ne definise data sema
+        - postavljanjem atributa namespace mozemo joj dodeliti namespace (any, targetNamespace, other, local, URL)
+    - *<\anyAttribute>* analogno *any* samo za atribute
+- zamena elemenata
+    - moguce je da se element Y u dokumentu nadje umesto elementa X
+    - X se zove *head*
+    - primer <xsd:element name="X" type="xsd:string"/>
+
+    
+
+
