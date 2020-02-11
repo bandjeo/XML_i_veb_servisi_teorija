@@ -1184,6 +1184,9 @@ characters(), processingInstructions()*
 - *GRDDL*
     - *Gleaning Resource Descriptions from Dialects of Languages* (GRDDL) je W3C specifikacija koja olakšava ekstrakciju RDF iskaza iz XML dokumenata
     - Obicno se RDF iskazi u RDFa formatu transformišu u RDF iskaze u RDF/XML formatu korišcenjem XSLT transformacije
+- *Linked data*
+    - Linked data je skup principa za objavljivanje, pronalaženje i pregledanje podataka u RDF formatu (ti podaci mogu biti distribuirani na više servera)
+    - Linked data je korišcenje mreže za povezivanje srodnih podataka koji nisu povezani ili smanjivanje barijere za povezivanje podataka koji su povezani korišcenjem drugih metoda
 - Linked Data in the Wild
     - *Schema.org*
         - projekat ciji je cilj stvaranje, održavanje i promovisanje šeme za strukturirane  podatke na internetu
@@ -1203,8 +1206,167 @@ characters(), processingInstructions()*
         - Cinjenice su predstavljene kao strukturirane informacije za linkovima ka drugim cinjenicama
 
 ## RDFS
+- RDFS (RDF Schema) je semanticko proširenje RDF
+- Omogucava definisanje domenski specificnih klasa i svojstava
+- RDF Schema se zapisuje u RDF formatu
+- RDF Schema vs. XML Schema
+    - XML Schema deklariše elemente i atribute dokumenata odreenog tipa
+    - RDFS definiše klase i svojstva u domenski specificnom semantickom modelu
+    - XML Schema zadaje ogranicenja nad strukturom XML dokumenta (može se definisati domenski specificna struktura
+    - RDF Schema zadaje "znacenje" RDF iskaz (mogu se definisati domenski specificne klase i svojstva)
+- **OWL** (*Web Ontology Language*)
+    - može se koristiti za eksplicitno predstavljanje znacenja termina i odnosa izmedju tih termina
+    - Pruža formalan opis koncepata, termina, i odnosa u zadatom domenu
+    - OWL ima više mogucnosti za izražavanje znacenja i semantike od XML, RDF i RDFS
+    - Ova predstava termina i njihovih meusobnih odnosa zove se ontologija
+- **Klasa**
+    - Klasa u RDFS je slicna klasi u objektno-orijentisanim programskim jezicima (skup slicnih resursa)
+    - vrste
+        - `rdfs:Resource` - instance ove klase su resursi
+        - `rdfs:Class` - instance ove klase su klase
+        - `rdfs:Literal` - instance ove klase su vrednosti svojstva koje su tipizirane konstante
+        - `rdf:Property` - instance ove klase su svojstva
+- **Svojstvo**
+    - Svojstva su (bitne) osobine resursa
+    - Za razliku od objektno-orijentisanih programskih jezika, svojstva su "ravnopravna" sa klasama (takodje su resursi i takodje se mogu nasleivati)
+    - atributi
+        - `rdf:type` - tip resursa (klasa ciji je resurs instanca)
+        - `rdfs:subClassOf` - klasa je specijalizacija klase
+        - `rdfs:subPropertyOf` - svojstvo je specijalizacija svojstva
+    - ogranicenja (u vidu atributa)
+        - `rdfs:domain` - domen svojstva
+        - `rdfs:range` - kodomen svojstva
+- **Anotacije**
+    - `rdfs:comment` - opis resursa (human-readable)
+    - `rdfs:label` - ime resursa (human-readable)
+    - `rdfs:seeAlso` - resurs koji pruža dodatne informacije o resursu
+    - `rdfs:isDefinedBy` - resurs koji definiše resurs
+
 ## SPARQL
-## Biznis procesi
+- upitni jezik za postavljanje upita nad podacima u RDF formatu
+- SPARQL je protokol za postavljanje upita nad udaljenim RDF skladištima preko HTTP protokola
+- SPARQL (kao upitni jezik) omogucava:
+    - Ekstrakciju podataka iz strukturiranih i polustrukturiranih izvora
+    - Transformaciju podataka u RDF formatu iz jednog recnika u drugi
+    - Izvršavanje složenih join operacija u jednom jednostavnom upitu
+- **Upiti**
+    - izvršavaju se nad RDF grafovima
+    - nad raznorodnim izvorima podataka
+        - podaci izvorno skladišteni u RDF formatu
+        - podaci skladišteni u drugom formatu (XML, HTML, RDB) koje middleware transformiše u RDF format
+    - vrste
+        - `SELECT` - vraca promenljive u tabelarnom obliku
+        - `CONSTRUCT` - vraca RDF graf konstruisan na osnovu promenljivih
+        - `ASK` - vraca logicku vrednost koja oznacava da li ekvivalentan `SELECT` upit vraca rezultat
+        - `DESCRIBE` - vraca RDF graf koji opisuje resurs
+    - struktura
+        - Deklaracija prefiksa (skracivanje URI)
+        - Definicija izvora podataka (RDF grafova nad kojima ce se izvršiti upit)
+        - Klauzula rezultata (specifikacija podataka koje ce upit vratiti)
+        - Obrazac grafa (specifikacija restrikcija nad podacima)
+        - Modifikatori upita (isecanje, sortiranje, grupisanje i drugo modifikovanje rezultata)
+- **Obrazac grafa**
+    - SPARQL pomenljive pocinju sa ? i mogu da se poklapaju sa bilo kojim cvorom (resursom ili literalom) ili vezom u RDF grafu
+    - Obrasci trojki su trojke u kojima je bilo koji element (subjekat, predikat ili objekat) zamenjen sa promenljivom
+    - Obrazac grafa je skup obrazaca trojki (koji mogu biti filtrirani logickim izrazima) i modifikovani `OPTIONAL` i `UNION` kljucnim recima
+- `FILTER` primenjuje operator/funkciju na rezultat
+    - tabela operatora i funkcija na slajdovima
+- **FROM NAMED**
+    - SPARQL upiti se izvršavaju nad RDF skupovima podataka koji se sastoje iz RDF grafova
+    - RDF skupovi podataka sastoje se iz podrazumevanog grafa i nula ili više imenovanih grafova (identifikovanih sa URI)
+    - Imenovani grafovi mogu se specificirati sa `FROM NAMED` klauzulom
+    - `GRAPH` klauzula omogucava da se delovi upita poklapaju sa imenovanim grafovima u RDF skupu podataka (sve izvan `GRAPH` klauzule se poklapa sa podrazumevanim grafom)
+- *Rezultati* se mogu vartiti u razlicitim formatima
+    - XML (SPARQL Query Results XML Format)
+        - Serijalizuje rezultat SPARQL `SELECT` i `ASK` upita u XML
+        - Rezultat `SELECT` upita je tabela (slicna HTML table elementu)
+        - Rezultat ASK upita je logicka vrednost
+    - JSON (SPARQL 1.1 Query Results JSON Format)
+        - Serijalizuje rezultat SPARQL `SELECT` i `ASK` upita u JSON
+        - Rezultat `SELECT` upita je tabela serijalizovana u niz (elementi niza su vrste tabele)
+        - Rezultat `ASK` upita je logicka vrednost
+    - CSV/TSV (SPARQL 1.1 Query Results CSV and TSV Formats)
+        - Rezultat `SELECT` upita može se serijalizovati i u CSV i TSV format
+        - Pogodno za uvoz podataka u Excel, RDBMS, itd.
+    - RDF (može se serijalizovati u više formata)
+    - HTML (kada se sa SPARQL upitima radi u interaktivnom modu)
+- `CONSTRUCT` upit
+    - alternativa `SELECT` upitu koja vraca RDF graf umesto tabele
+    - RDF graf se konstruiše tako što se uzimaju rezultati ekvivalentnog `SELECT` upita i sa njima zamenjuju vrednosti promenljivih u obrascima u `CONSTRUCT` klauzuli
+    - U RDF grafu se ne konstruišu trojke za obrasce u kojima se nalaze nevezane promenljive
+- `ASK` upit
+    - vraca logicku vrednost u zavisnosti od toga da li se obrazac poklapa sa nekim (bilo kojim) skupom podataka
+    - Kao i kod `SELECT` upita, rezultati su podrazumevano kodirani u XML formatu
+- `DESCRIBE` upit
+    - upit vraca RDF graf koji opisuje zadati resurs
+    - Nisu interoperabilni zato što razliciti serveri mogu da ih interpretiraju na razlicite nacine
+- *RDF skladista (triplestores)*
+    - Skladište podatke izvorno u RDF obliku (kao RDF graf ili skup RDF trojki/iskaza)
+    - Omogucavaju izvršavanje SPARQL upita nad podacima koje skladište
+    - Indeksiranjem su optimizovani za izvršavanje upita nad grafovima
+- *SPARQL krajnje tacke (endpoints)*
+    - prima zahteve i vraca odgovore preko HTTP protokola (SPARQL protokol ili RESTful)
+        - Genericke krajnje tacke omogucavaju izvršavanje upita nad bilo kojim RDF skupom podataka dostupnim na mreži
+        - Specificne krajnje tacke su podešene za izvršavanje upita nad tacno odreenim skupom podataka
+    - Podaci mogu bili skladišteni u RDF skladištima, ali i u drugim vrstama skladišta (RDBMS, XML, itd.) kojima se pristupa preko middleware
+- *MarkLogic*
+    - Komercijalna enterprise NoSQL baza podataka
+    - Skladištenje i pretraživanje podataka u XML, RDF i JSON formatu
+    - Podrška za ACID transakcije
+    - Distribuirana arhitektura koja lako skalira
+- *Jena*
+    - Java framework otvorenog koda za skladištenje, izvršavanje upita i rezonovanje sa podacima u RDF formatu
+    - Serijalizacija i deserijalizacija RDF u RDF/XML, N3, N-Triples, itd
+    - Skladištenje podataka u memoriji i na disku
+    - Izvršavanje SPARQL upita
+    - Podrška za OWL (Web Ontology Language) korišcenjem internih rezonera i Pellet rezonera
+- *RDF4J (Sesame)*
+    - Sesame je framework otvorenog koda za skladištenje RDF podataka i izvršavanje upita nad njima
+    - Sadrži implemantaciju RDF skladišta u memoriji i na disku
+    - Sesame RDF Input/Output paket sadrži Java API za serijalizaciju i deserijalizaciju RDF podataka u/iz popularnih formata
+    - Podrška za SPARQL and SeRQL
+
+## Poslovni procesi
+- Poslovni proces je skup aktivnosti koje jedan ili više ulaza transformišu u jedan ili više izlaza radi ostvarivanja planiranog cilja
+- Ulazi i izlazi mogu biti informacije (dokumenti)
+- svojstva
+    - Poslovni procesi mogu se izvršavati od nekoliko sekundi, preko nekoliko meseci, do nekoliko godina (radni tokovi su dugotrajne transakcije)
+    - Poslovni procesi mogu se sastojati od drugih poslovnih procesa (radni tokovi su ugnježdene transakcije)
+    - Redosled aktivnosti u poslovnom procesu može, a ne mora biti definisan (mogu se izvršavati konkurentno)
+    - Nivo automatizacije poslovnih procesa varira (mogu se izvršavati automatski, poluautomatski ili rucno)
+- primeri: Izrada diplomskog rada, Kupovina robe, Obavljanje lekarskog pregleda, Dobijanje graevinske dozvole, Donošenje skupštinske odluke
+- **aktivnosti**
+    - atomicki koraci poslovnog procesa na posmatranom nivou apstrakcije
+    - primeri: Odbrana diplomskog rada, Placanje, Zakazivanje lekarskog pregleda, Podnošenje zahteva za izdavanje graevinske dozvole, Glasanje u pojedinostima
+- [dokumenti](#inzenjering-dokumenata)
+- **Agenti i uloge**
+    - Agent je osoba potrebna za izvšavanje aktivnosti
+    - Uloga je sposobnost agenta za izvršavanje odredjene aktivnosti
+    - Jedan agent može imati više uloga, može postojati hijerarhija uloga
+    - primeri: Student, Prodavac, Lekar, Preduzetnik, Odbornik
+- Sistemi za upravljanje radnim tokovima / poslovnim procesima
+    - omogucavaju definisanje, izvršavanje i nadgledanje izvršavanja radnih tokova
+    - Nazivaju se i sistemi za upravljanje radnim tokovima bazirani na dokumentima
+- **modelovanje poslovnih procesa**
+    - sta?
+        - Analiza poslovnih procesa
+        - Sinteza poslovnih procesa
+    - zasto?
+        - Automatizacija poslovnih procesa
+        - Poboljšanje poslovnih procesa
+        - Reinženjering poslovnih procesa
+    - kako?
+        - (UML) dijagram aktivnosti
+        - Business Process Modelling Notation (BPMN) dijagram
+- **model poslovnih procesa**
+    - Sastoji se od skupa aktivnosti i ogranicenja nad tim skupom (predstavlja aktivnosti i njihove meusobne odnose)
+    - Može se koristiti za komunikaciju izmeu ucesnika u razvoju informacionih sistema ili za konfiguraciju sistema za upravljanje radnim tokovima / poslovnim procesima
+    - Graficka reprezentacija poslovnih procesa fokusira se na strukturu procesa i interakciju izmeu agenata (umesto tehnickih aspekata)
+- *UML dijagram aktivnosti*
+    - UML dijagrami aktivnosti mogu se koristiti za modelovanje poslovnih procesa / radnih tokova
+    - Prikazuju niz aktivnosti, od pocetne tacke poslovnog procesa do krajnje tacke poslovnog procesa, detaljno opisujuci tok kontrole
+    - UML dijagrami aktivnosti opisuju sekvencijalni ili konkurentni tok aktivnosti u sistemu
+
 ## SOA
 ## SOAP
 ## WSDL
