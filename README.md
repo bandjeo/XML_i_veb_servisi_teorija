@@ -13,6 +13,7 @@
 - [JAXB](#jaxb)
 - [XPath](#xpath)
 - [XQuery](#xquery)
+- [Vizuelizacija XML Dokumenta](#vizuelizacija-xml-dokumenta)
 - [CSS](#css)
 - [XSLT](#xslt)
 - [XSL-FO](#xsl-fo)
@@ -830,9 +831,125 @@ characters(), processingInstructions()*
     - statička ili dinamička - zavisno od implementacije
     - `error()` - za programsko izazivanje greske
     - `trace()` - za generisanje poruke o gresci bez prekidanja izvrsavanja
-    
+
+## Vizuelizacija XML Dokumenta
+- vizuelizacija XML dokumenta
+    - sadrzaj + struktura + prezentacija
+    - jedan dokument moze da biti prikazan na vise nacina
+        - moze zavisiti od korisnika (npr. autor, urednik, citalac)
+        - moze zavisiti od pristupnog uredjaja (npr. web browser, telefon)
+    - prikazivanje XML dokumenata oslanja se na neku od postojećih tehnologija (HTML, WDF, PDF, itd.)
+    - tehnologije za vizuelizaciju XML dokumenta
+        - [CSS](#css) (*Cascading Style Sheets*)
+        - XSL (*Extensible Style Sheets*)
+            - [XSLT](#xslt) (*XSL Transformations*)
+            - [XSL-FO](#xsl-fo) (*XSL Formatting Objects*)
 ## CSS
+- tehnologija za vizuelizaciju pre svega namenjena za HTML
+- adaptirana za upotrebu sa XML-om
+- HTML je počeo kao jezik za opis strukture dokumenata 
+- elementi za formatiranje dodavani su kasnije
+- primer: ova dva fragmenta proizvode vizuelno isti rezultat
+    - `<h1>Document title</h1>`
+    - `<div><font size="7" face="New Times Roman">Document title</font></div>`
+    - prva varijana nosi vise semantike nego druga (moze se zakljuciti da je u pitanju naslov najviseg nivoa)
+- uveden kako bi se
+    - zaustavilo uvođenje novih tagova za formatiranje
+    - razdvojila logička struktura dokumenta od njegove prezentacije
+    - ustanovio skup atributa koji definišu izgled HTML strane, zajednički za sve web browsere
+    - stvorilo sredstvo za prikaz dokumenata na različitim medijima (web browser, papir, PDA, telefoni, govorni uredjaji)
+- CSS fajl nije XML dokument, ima sopstvenu sintaksu
+- kaskadno - parametri definisani za element A nasledjuju se u svim elementima koje A sadrži
+- CSS i XML
+    - može se iskoristiti za vizuelizaciju XML dokumenata
+    - nije najfleksibilnije rešenje, ali podržan je u svim browserima
+    - povezivanje XML dokumenta sa CSS fajlom
+        - `<?xml-stylesheet type="text/css" href="fajl.css"?>`
+- kada koristiti?
+    - kada se web browser koristi za prikaz dokumenata
+        - moguće je CSS koristiti i za štampu, ali malo softvera podržava sve CSS funkcije
+    - kada je sadržaj dokumenta blizak onome što treba prikazati
+        - ukoliko su potrebne transformacije nad podacima u dokumentu CSS se teško može koristiti
+- nedostaci
+    - nije moguće promeniti redosled elemenata u dokumentu (npr. sortiranje i filtriranje podataka)
+    - nisu moguća izračunavanja (proseka, maksimuma, itd.)
+    - nije moguće kombinovanje više dokumenata u jedan prikaz
+
 ## XSLT
+- jezik za opis transformacija XML dokumenata u druge XML
+- W3C standard
+- za navigaciju koristi XPath izraze
+- vizuelizacija - samo jedna od primena
+    - kada je rezultat transformacije XHTML
+- XSLT je još jedna XML gramatika
+- funkcionalnost
+    - jedan XML dokument se transformiše u drugi
+    - transformacija je opisana XSLT dokumentom
+    - transformaciju izvodi XSLT procesor
+    - XSLT fajl sadrži definicije **šablona**
+        - šablon opisuje transformaciju dela polaznog dokumenta
+        - deo polaznog dokumenta se identifikuje XPath izrazom
+    - interpretiranje XSLT fajla se svodi na primenu šablona
+- `<xsl:stylesheet>` - korenski element svakog XSLT dokumenta
+    - atribut `version` - verzija XSLT jezika koja se koristi u fajlu 
+    - deklaracija za XSLT namespace, uobičajeni prefiks je xsl
+    - sadržaj elementa čine šabloni - `<xsl:template>`
+- `<xsl:template>` - definiše šablon
+    - atribut `match` sadrži kontekst u kome će se šablon izvršiti
+        - kontekst se definiše kao XPath izraz
+        - XPath izraz, ako predstavlja relativnu putanju, se izračunava u odnosu na tekući kontekst
+        - ako se ne pronađe dati kontekst, šablon se ne izvršava
+    - sadržaj elementa se dodaje na kraj rezultujućeg fajla
+        - ako se u sadržaju nalaze drugi XSLT elementi, oni se prethodno izračunavaju
+- `<xsl:value-of>` - sadržaj datog elementa dodaje u rezultujući dokument
+    - atribut `select` predstavlja XPath putanju do željenog elementa
+        - ako element ne postoji, ne ubacuje se ništa
+        - ako postoji više elemenata za dati XPath, uzima se prvi
+    - uvek je prazan
+- `<xsl:for-each>` - izdvaja svaki element iz skupa čvorova
+    - atribut `select` predstavlja XPath putanju do željenih elemenata
+    - sadržaj se dodaje na izlazni fajl za svaki pronađeni element
+        - sadržaj se ponovo procesira ako sadrži XSLT elemente
+- `<xsl:sort>` - sortira sadržaj tekućeg konteksta prema datom kriterijumu
+    - atributi
+        - `select` - XPath do čvora čiji sadržaj se koristi kao ključ za sortiranje
+        - `data-type` - koji tip podatka se koristi kao ključ (`text`, `number`, `QName`)
+        - `order` - opadajući ili rastući redosled (`ascending`, `descending`)
+        - `case-order` - prvo velika ili mala slova (`upper-first`, `lower-first`)
+        - `lang` - jezik čiji alfabet se koristi za sortiranje (*ISO 639*: *sr*, *en*, *fr*, itd)
+    - element je uvek prazan
+- `<xsl:if>` - prikazuje svoj sadržaj samo ako je dati uslov ispunjen
+    - atribut `test` - uslov koji je potrebno ispuniti
+    - primer: `<xsl:if test="price &lt; 10"/>`
+- `<xsl:choose>` - izvršava više uzastopnih testova
+    - svaki test se opisuje pomoću `<xsl:when>` podelementa
+        - atribut test predstavlja sadržaj testa
+    - ako nijedan test nije ispunjen, izvršava se `<xsl:otherwise>` podelement
+    - poput *switch-case-default*
+- `<xsl:apply-templates>` - pokreće ponovnu primenu šablona u okviru tekućeg konteksta
+    - ako ima atribut `select` šabloni se primenjuju samo na izabrane podčvorove
+- `<xsl:call-template>` - poziva imenovani šablon na datom mestu
+    - moze da ima parametre - `<xsl:param name="width"/>`
+    - parametri mogu imati podrazumevane vrednosti - `<xsl:param name="bgColor" select="'blue'"/>`
+        - moze i unutar elementa kao sadrzaj
+    - upotreba parametra `<td width="{$width}" bgcolor="{$bgColor}">`
+    - poziv sa parametrom
+        - `<xsl:call-template name="addTableCell">`
+        -   `<xsl:with-param name="width" select="100"/>`
+        - `</xsl:call-template>`
+- **promenljive**
+    - definisanje `<xsl:variable name="x"/>`
+        - moze da ima podrazumevanu vrednost
+        - moze da sadrzi podelemente poput `<xsl:choose>`
+    - upotreba ista kao i kod parametra
+    - nije moguce menjati vrednost
+    - promenljive su vezane za šablon u kojima su definisane
+        - različiti šabloni mogu imati promenljive istog imena
+    - globalna promenljiva - dete `<xsl:stylesheet>` elementa
+        - vidljiva u svim šablonima koji se nalaze posle njene definicije
+        
+
+    
 ## XSL-FO
 ## RDF
 ## RDFS
