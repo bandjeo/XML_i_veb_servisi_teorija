@@ -660,6 +660,177 @@ characters(), processingInstructions()*
     - rezultat je unija skupova čvorova dobijenih osnovnim izrazima
 
 ## XQuery
+- standardni upitni jezik za XML
+- W3C standard
+- ekvivalent SQL-a za XML dokumente
+- **tipovi podataka**
+    - svi ugradjeni XML Schema tipovi
+    - jos 7 tipova vezanih za tipove cvorova u stablu dokumenta
+    - jos 6 tipova specificnih za XQuery
+    - svaka XQuery vrednost je sekvenca koja sadrzi 0 ili vise elemenata
+        - element sekvence je *singleton* ako sadrzi samo jedan element `(1)=1`
+        - sekvenca moze biti prazna `()`
+        - ne moze da sadrzi druge sekvence
+        - sekvence se poravnavaju `(0, (), (1, 2)) = (0, 1, 2)`
+    - svaki *singleton* ima svoj tip izveden iz `item()`
+    - tip je apstraktan, ne moze se instancirati
+    - pise se sa zagradama da bi se razlikovao od krisnickih tipova istog imena
+        - da bude nalik XPath testu cvora
+    - tip moze da bude XML cvor ili atomicka vrednost
+    - *XML cvorovi* izvedeni iz `node()`
+        - *attribute(), comment(), document()...*
+    - *atomicke vrednosti* nasledjuju `xdt:anyAtomicType`
+        - *xs:boolean, xs:string, xs:data...*
+    - sekvenca ima tip koji se sastoji od 
+        - imena tipa ili `empty()`
+        - (opciono) indikator ponavljanja (*, +, ?)
+        - primeri: `item()`, `item()*`, `xsd:integer*`
+    - staticki tip (*compile-time*)
+    - dinamicki tip (*run-time)
+        - tip dobijenog rezultata
+        - vrednost rezultata je instanca tog tipa
+    - provera tipova moze da se vrsi *compile-time* ili *run-time*
+- whitespace i komentari
+    - posebni znakovi za whitespace (npr. U+0020 = space)
+    - komentar moze da se pojavi bilo gde na mestu whitespace znakova
+        - pise se izmedju `(: ... :)`
+- **konstante**
+    - prazna sekvenca `()`
+    - logicke (*xs:boolean*) `true(), false()`
+    - stringovi (*xs:string*) `"dokle", "vise"`
+    - celi brojevi (*xs:integer*) `42`
+    - brojevi u fiksnom zarezu (*xs:decimal*) `42., 4.2, .42`
+    - brojevi u pokretnom zarezu (*xs:double*) `42E0, 4.2e+0, 42E-2`
+    - drugi tipovi `xs:float("1.25"), xs:ID("X1")`
+- **prolog**
+    - nije obavezan
+    - definiše kontekst za upit (compile-time)
+        - namespaces `declare namespace x = "http://www.foo.com"`
+        - korisničke funkcije `declare function my:fact($n as xs:integer) as xs:integer {}`
+        - importovani šema tipovi
+        - importovani moduli
+        - promenljive
+- rezultat XQuery upita moze biti atomicka vrednost ili XML sadrzaj
+- **XML sadrzaj**
+    - XQuery se često koristi za generisanje XML dokumenata
+        - slično kao u SQL-u (rezultat upita je relacija)
+    - XML node constructor `<dokle>vise</dokle>`
+    - dinamicko generisanje sarzaja: XQuery izrazi unutar `{ ... }`
+        - primer: `<x y="2*2 = {2*2}">Velika istina: 2*2 = {2*2}.</x>`
+        - rezultat: `<x y="2*2 = 4">Velika istina: 2*2=4.</x>`
+    - navodjenje viticastih zagrada `<add>{{ 1 + 1 = { 1+1 }}}</add>` => `<add>{ 1 + 1 = 2 }</add>`
+    - alternativni nacin za knstrukciju elemanata: `element {"ime"} {"sadrzaj"}` => `<ime>sadržaj</ime>`
+    - sekvence se poravnavaju pre ugradjivanja u XML
+- **operatori**
+    - zarez definise sekvencu
+        - ima najnizi prioritet pa se sekvence cesto smestaju u zagrade
+    - zagrade mogu da grupisu izraze razlicitih tipova
+    - logicki operatori `and`, `or`, i `not()`(pise se kao funckija zbog kompatibilnosti sa XPath)
+    - *if-then-else* operator
+        - else je obavezan
+        - `if (true()) then "true" else "false"`
+    - aritmeticki
+        - binarni: `+, -, *, div, idiv, mod`
+        - unarni: `+, -`
+    - poredjenje vrednosti za dva singletona: `eq, ne, gt, ge, lt, le`
+    - generalno poredjenje - za dve sekvence
+        - vraca `true()` ako u obe sekvence postoji bar po jedan element za koji poredjenje po vrednosti vraca `true()`
+    - poredjenje cvorova - operisu nad sekvencama cvorova
+        - `<<` - "before": vraća true ako je levi čvor ispred/pre desnog u dokumentu
+        - `>>` - "after": vraća true ako je levi čvor iza/posle desnog u dokumentu
+        - `is` - vraća true ako su čvorovi isti (po identitetu)
+        - `isnot` - negacija od is
+    - funkcije za poredjenje
+        - `compare()`: poredi dve atomicke vrednosti
+        - `deep-equal()`: predi cele sekvence, sa dubokim poredjenjem svih elemenata
+- **ugradjene funkcije**
+    - 110 komada
+    - razlikuju se po imenu i listi parametara
+    - funkcije nad sekvencama
+        - `count()`: dužina sekvence
+        - `distinct-values()`: ukloni sve duplikate
+        - `empty()`: da li je sekvenca prazna
+        - `exists()`: da li sekvenca nije prazna
+        - `index-of()`: položaj elementa u sekvenci
+        - `insert-before()`: ubaci element u sekvencu
+        - `remove()`: ukloni element iz sekvence
+        - `reverse()`: obrni redosled sekvence
+        - `subsequence()`: izdvoj podsekvencu
+        - `unordered()`: naglasi da redosled nije važan
+    - aritmeticke funkcije
+        - `floor()`
+        - `ceiling()`
+        - `abs()`
+        - `min()`
+        - `max()`
+        - `avg()`
+        - `sum()`
+        - `round()`
+        - `round-half-to-even()`
+<> sintaksni biseri
+- **putanje**
+    - koristi se neznatno izmenjen [XPath](#xpath)
+    - struktura elementa putanje je ista
+    - funkcije za navigaciju
+        - `collection()`: imenovana sekvenca
+        - `doc()`: koren datog XML dokumenta
+        - `id()`: element sa datim ID-jem
+        - `idref()`: elementi koji pokazuju na dati ID
+        - `root()`: koren tekućeg dokumenta
+- **promenljive**
+    - navode se sa znakom `$` ispred imena
+    - ime moze biti nekvalifikovano i kvalifikovano
+        - prefiks zamenjuje namespace
+    - promenljivama se ne moze menjati vrednost
+- **FLWOR izrazi**
+    - centralni izraz u XQuery
+    - cita se *flower*
+    - for, let, where, order by, return
+    - namene
+        - definisanje promenljivih
+        - iteraciju kroz sekvencu
+        - filtriranje rezultata
+        - sortiranje sekvenci
+        - spajanje razlicitih izvora podataka
+    - primer
+        - `for $i in doc("orders.xml")//Customer`
+        - `let $name := concat($i/@FirstName, $i/@LastName)`
+        - `where $i/@ZipCode = 91126`
+        - `order by $i/@LastName`
+        - `return <Customer Name="{$name}">{ $i//Order }</Customer>`
+- **kvantifikacija**
+    - operatori `some` (postoji) i `every` (za svaki)
+    - skraceni FLWOR
+    - vracaju logicku vrednost
+    - primer: `some $emp in doc("team.xml")//Employee satisfies $emp/@years > 5`
+- join
+    - *join* funkcionalnosti iz SQL-a se mogu implementirati sablonima
+        - dekartov proizvod
+        - *inner* *join* (*one-to-one*, *many-to-many*)
+        - *outer* *join* (*left*, *right*)
+        - self *join*
+- **poredjenje sekvenci**
+    - egzistencijalno poredjenje
+        - uobicajeno poredjenje radi ovo
+        - `some()`
+    - poredjenje član-po-član
+        - `deep-equal()` - ponasa se rekurzivno
+        - `shallow-equal()` - ne postoji kao ugradjena funckija (implementacija u slajdovima)
+    - univerzalno poređenje - uslov je zadovoljen za svaki element
+        - `every()`
+- **sortiranje**
+    - `order by` - sortira se po datim kljucevima
+    - tretiranje prazne sekvence i *NaN*
+        - `empty least` - prazna sekvence je manja od svake neprazne; *NaN* je manji od svake ne-*NaN* vrednosti i neprazne sekvence
+        - `empty greatest`- prazna sekvenca je veca od svake neprazne; *NaN* je veci od svake *ne-NaN* vrednosti i neprazne sekvence
+- grupisanje
+    - nema posebnog `group by` operatora
+    - rezultujuci XML predstavlja grupisanje
+- obrada gresaka
+    - statička ili dinamička - zavisno od implementacije
+    - `error()` - za programsko izazivanje greske
+    - `trace()` - za generisanje poruke o gresci bez prekidanja izvrsavanja
+    
 ## CSS
 ## XSLT
 ## XSL-FO
