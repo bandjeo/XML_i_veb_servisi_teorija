@@ -6,6 +6,7 @@
 - [Document Type Definition (DTD)](#document-type-definition)
 - [XML Namespaces](#xml-namespaces)
 - [XML Schema](#xml-schema)
+- [XML Parseri](#xml-parseri)
 - [StAX](#stax)
 - [SAX](#sax)
 - [DOM](#dom)
@@ -455,7 +456,7 @@ taga
         - mora biti smesten unutar elementa posle definicije sadrzaja i deklaracije atributa
         - podelement `<selector>` odredjuje skup elemenata na koje se kljuc odnosi (opseg)
         - podelement `<field>` odredjuje atribut ili element cija vrednost predstavlja kljuc (ponovljiv)
-        - identifikuju se [*XPath*-om](#xpath)
+        - identifikuju se [XPath-om](#xpath)
     - **referenciranje kljuceva**
         - element oznacen pomocu `<keyref>` mora sadrzati vrednost nekog atributa *key*
         - broj i tip polja u referenci na kljuc mora odgovarati broju i tipu polja u kljucu
@@ -483,18 +484,180 @@ taga
     - element je kvalifikovan ako je asociran sa *namespace*-om
     - `elementFormDefault="qualified"` - svi elementi mogu biti kvalifikovani
     - `elementFormDefault="unqualified"` - samo globalni elementi mogu biti kvalifikovani
+- kvalifikovanje elemenata u XPath izrazima
+    - ako je elementFormDefault="qualified" elementi u XPath izrazima se moraju kvalifikovati, čak i kada je targetNamespace ujedno i default namespace
+    - ako je elementFormDefault="unqualified" tada se elementi u XPath izrazima ne kvalifikuju
 
+## XML Parseri
+- moguce je napraviti parser koristesi tehnike naucene na programskim prevodiocima
+- bolje koristiti vec gotove
+    - manje posla
+    - manja verovatnoca greske
+- progarmski modeli za parsiranje XML dokumenata
+    - streaming parseri
+        - *pull* ([StAX](#stax) parseri)
+        - *push* ([SAX](#sax) parseri)
+    - *DOM* parseri
+    - *XSL-T* parseri
+- *push* parseri
+    - implementiraju programski model u kome XML parser salje (gura) podatke programu koje ga koristi nailazeci na elemente XML informacionog skup (element, atribute, test, itd.)
+- *pull* parseri
+    - pull parseri implementiraju prgoramski model u kome programi koji ih koriste pozivaju metode XML parsera (vuku podatke) kada im treba element XML informactionog skupa
+- [StAX](#stax)
+    - pull streaming
+    - lako upotrebljiv
+    - ne podrzava [XPath](#xpath)
+    - nisko zahtevni za CPU
+    - cita ili pise XML
+- [SAX](#sax)
+    - push streaming
+    - teze upotrebljiv
+    - ne podrzava [XPath](#xpath)
+    - nisko zahtevni za CPU
+    - cita XML
+- [DOM](#dom)
+    - in memory tree
+    - lako upotrebljiv
+    - podrzava [XPath](#xpath)
+    - visoko zahtevni za CPU
+    - cita i pise XML
+    - podrzava CRUD
+- *TrAX*
+    - XSLT rules
+    - teze upotrebljiv
+    - podrzava [XPath](#xpath)
+    - visoko zahtevni za CPU
+    - cita i pise XML
 
 
 ## StAX
+- pull parser
+- koristi se i za citanje i za pisanje
+- XML dokumente parsira koriscenjem iteratora
+- *Cursor* API koristi kursor koji se krece od pocetka do kraja XML dokumenta
+- *Iterator* API predstavlja XML dokument kao niz diskretnih dogadjaja koji se mogu obraditi
+
 ## SAX
+- definisan za razlicite jezike (Java, C++)
+- specifikacije slicne za svaki jezik
+- nije W3C standard ali je *de facto* standard
+- koncept
+    - parsiranje je *event-driven*
+    - parser generise dogadjaje (npr. poceo dokument, poceo element, zavrsio element)
+    - nas kod obradjuje dogadjaj (*handler*-i koje poziva parser putem *callback*-a)
+- *handlers*
+    - dogadjaji koje obradjuju: *startDocument(), endDocument(), startElement(), endElement(),
+characters(), processingInstructions()*
+    - *ContentHandler* (dogadjaji), *ErrorHandler* (greske), *DTDHandler* (DTD), *EntityResolver* (Spoljni entiteti)
+    - *DefaultHandler* nasledjuje sve prethodne interfejse praznim metodama, redefinisu se potrebne
+- rezultati
+    - ocuvani whitespace (sem kod atributa)
+        - nema DTD na raspolaganju pa pretpostavlja da svaki element ima mixed content model
+    - komentari su ignorisani
+        - trebalo bi implementirati *LexicalHandler*
+    - prazni elementi: `<item/>` se događajima predstavlja kao `<item></item>`
+- *Locator* - objekat koji sadrži podatke o lokaciji na kojoj se desio
+    - validan samo u trenucima poziva event-handling metoda
+- obrada gresaka
+    - *SAXException* može da sadrži i izuzetak koji se desio u event-handleru
+    - *SAXParseException* nasledjuje *SAXException* i sadrži informacije o redu u kome je greška događaj
+    - tri nivoa gresaka
+        - *warning* - npr. element definisan dva puta u DTD-u (jeste greška, ali ne pravi probleme)
+        - *error* - npr. dokument nije validan
+        - *fatalError* - npr. dokument nije dobro formiran
+- CDATA sekcije
+    - reference na entitete parser automatski zamenjuje njihovim vrednostima
+    - CDATA sekcije parser automatski pretvara u nizove znakova
+- parsiranje uz validaciju
+    - dokument moze da poseduje svoj DTD ili referencu na spoljasnji DTD
+    - nevalidirajući parser ignoriše whitespace tamo gde je to moguće
+    - validirajući radi sve to plus validaciju
+    - kreiranje parsera - izbor fabrike, *setValidating(boolean)*, *setNamespaceAware(boolean)*
+    - moze i pomocu seme
+        - `setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema")`
+    - ako povezemu semu programski sema u dokumentu se ignorise
+
 ## DOM
+- **Document Object Model**
+    - W3C standard za objektno-orijentisanu reprezentaciju dokumenata sa hijerarhijskom strukturom - stablo
+    - varijante za razlicite jezike i dokumente
+    - rezuletat parsiranja je stablo objekata
+        - stalno prisutno u memoriji, za ceo dokument
+        - redosled obrade elemenata se ne mora poklapati sa redosledom u dokumentu
+    - mozemo serijalizovati stablo nazad u XML
+    - problem sa zauzecem memorije
+        - veliki dokumenti
+        - puno dokumenata u isto vreme
+- Java specificnosti
+
 ## JAXB
+- JAXB (Java Architecture for XML Binding) je framework za generisanje Java klasa na osnovu  TD ili XML Schema šema (i obrnuto) i za transformaciju XML dokumenata u graf Java objekata (i obrnuto)
+- JAXB parseri rade na višem nivou apstrakcije od SAX, StAX-a i DOM parsera
+- JAXB parseri predstavljaju XML dokumente kao Java klase iz odreenog domena
+- JAXB se može posmatrati kao jedan nacin (de)serijalizacije stanja Java objekta
+- Koriste se za parsiranje transakcionih dokumenata (koji se relativno lako mapiraju na java objekte)
+- za parsiranje narativnih dokumenata (koji se tesko mapiraju na java objekte) koriste se drugi parseri
+- proces
+    - Pomocu binding prevodioca DTD ili XML Schemu prevesti u Java klase (ili obrnuto)
+    - Pomocu Java prevodioca prevesti Java klase (u byte kod)
+    - Napisati Java program koji transformiše XML dokumente u graf Java objekata (i obrnuto)
+- JAXB koristi podrazumevana pravila povezivanja
+- Podrazumevana pravila povezivanja mogu se promeniti anotacijama u XML šemi ili Java klasi
 
 ## XPath
-- Kvalifikacija elemenata u XPath izrazima
-    - ako je elementFormDefault="qualified" elementi u XPath izrazima se moraju valifikovati, čak i kada je targetNamespace ujedno i default namespace
-    - ako je elementFormDefault="unqualified" tada se elementi u XPath izrazima ne kvalifikuju
+- definicija
+    - jezik za označavanje delova XML dokumenta
+    - zasniva se na konceptu navigacije kroz stablo dokumenta
+    - ima biblioteku standardnih funkcija
+    - W3C standard
+- **izrazi**
+    - izraz je namenjen za označavanje čvora ili skupa čvorova u dokumentu
+    - ovi izrazi liče na izraze za rad sa fajl-sistemom
+- XPath sadrži oko 100 ugrađenih funkcija
+- **čvorovi**
+    - XML dokument se, sa stanovišta XPath-a, posmatra kao stablo
+    - vise tipova cvorova
+        - element
+        - atribut
+        - tekst
+        - namespace
+        - procesna instrukcija
+        - komentar
+        - dokument (koren)
+    - odnosi medju cvorovima - roditelj, dete, brat/sestra, predak, naslednik
+    - koncept tekuceg cvora (cvor gde se nalazimo)
+- **putanja**
+    - sastoji se iz više koraka razdvojenih znakom "/"
+    - apsolutna putanja: počinje znakom /
+    - relativna putanja: ne počinje znakom /
+    - svaki korak se izračunava u odnosu na čvorove u tekućem skupu čvorova (node-set)
+- **korak**
+    - osa kretanja + test cvor + nula ili vise predikata
+    - opsti oblik `osa::test[predikat]`
+- **ose**:
+    - *ancestor* - svi preci
+    - *ancestor-or-self - svi preci ili sam cvor
+    - *attribute* - svi atributi (skraceno @)
+    - *child* - sva deca (default)
+    - *descendant* - svi potomci (skraceno //)
+    - *descendant-or-self* - svi potomci ili sam cvor
+    - *following* - sve u dokumentu iza zatvarajuceg taga tekuceg cvora
+    - *following-sibling* - sva braca posle tekuceg cvora (se moze pisato kao ../)
+    - *namespace* - svi namespace cvorovi tekuceg cvora
+    - *parent* - roditelj (skraceno ..)
+    - *preceding* - sve u dokumentu iza pocetnog taga tekuceg cvora
+    - *preceding-sibling* - sva braca pre tekuceg cvora
+    - *self* - tekuci cvor (skraceno .)
+- **predikati**
+    - koriste se za pronalazenje cvora koji zadovoljava dati uslov
+    - osnovna primena: filtriranje
+    - uvek se pisu unutar uglastih zagrada `[...]`
+    - unutar predikata mogu se koristiti funkcije, operatori, @ za atribut
+    - `[position() = X]` je skraceno `[X]`
+- funkcije i operatori su ugradjeni i ima ih mnogo
+- oznacavanje vise putanja odjednom
+    - navodjenjem vise *XPath* izraza povezanih operatorom "|"
+    - rezultat je unija skupova čvorova dobijenih osnovnim izrazima
 
 ## XQuery
 ## CSS
