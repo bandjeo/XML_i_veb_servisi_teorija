@@ -1114,6 +1114,94 @@ characters(), processingInstructions()*
 - *Linkovi* - element `<fo:basic-link>`
     
 ## RDF
+- uvodna terminologija
+    - podaci (skup simbola koji predstavljaju svojstva objekata, dogaaja ili njihovog okruženja)
+    - informacije (podaci organizovani tako da imaju znacenje)
+    - znanje (informacije organizovane tako da mogu da se koriste za donošenje odluka)
+    - narativni dokumenti (slabo strukturirani)
+    - transakcioni dokumenti (jako strukturirani)
+    - povezani dokumenti (world wide web)
+    - povezani podaci (semantic web, web 3.0)
+- **Linked Data**  predstavlja nacin objavljivanja podataka na (semantickom) webu
+    - ohrabruje ponovno korišcenje podataka
+    - smanjuje redudantnost
+    - maksimizira (pravu i potencijalnu) povezanost izmeu podataka
+    - omogucava stvaranje "mrežnog efekta" i dodaje vrednost podacima
+    - principi
+        - Koristiti URI za imena stvari
+        - Koristiti HTTP URI da bi stvari mogle da se pronadju
+        - Kada neko traži resurs, ponuditi odgovor u RDF formatu
+        - U odgovor ukljuciti RDF iskaze koji povezuju traženi resurs sa drugim resursima da bi mogle da se pronau srodne stvari
+- **RDF Graph**
+    - RDF (Resource Description Framework) je standardni model za razmenu podataka na WWW
+    - Proširuje WWW (mrežu dokumenata) tako što koristi URI za imenovanje stvari i njihovih odnosa (i na taj nacin formira mrežu podataka)
+    - Ova struktura formira usmeren oznacen graf (ciji su cvorovi resursi i literali, a grane relacije izmeu njih)
+    - Graf se može predstaviti kao skup iskaza oblika oblika **`<subjekat> <predikat> <objekat>`**
+- **Semantic web stek**
+    - XML pruža sintaksu za strukturiranje dokumenata, ali ne namece semanticka ogranicenja na znacenje takvih dokumenata
+    - XML Schema je jezik za ogranicavanje strukture XML dokumenata i takoe proširuje XML sa tipovima podataka
+    - RDF je model podataka za objekte ("resurse") i odnose izmeu njih, pruža jednostavnu semantiku za ovaj model podataka, i omogucava da se model podataka predstavi u XML sintaksi
+    - RDF Schema je recnik za opis klasa i svojstava RDF resursa, sa semantikom poput specijalizacije i generalizacije takvih klasa i svojstava
+- motivacija iza RDF-a
+    - Problem u pretraživanju iste semantike predstavljene razliciti XML stablima
+    - Upit treba da bude nezavisan od nacin na koji je predstavljena semantika
+    - Potreba za pretvaranjem svih mogucih predstava semantike u jedan iskaz
+- **RDF**
+    - Standardizovani nacin za pisanje iskaza
+    - Kako god da se ista semantika pojavi u XML dokumentima, predstavljena je na isti nacin RDF iskazima
+    - Više XML stabala može da odgovara jednom RDF grafu
+    - Resource Description Framework (RDF) je još jedna World Wide Web Consortium (W3C) specifikacija
+    - To je graf bazirani model podataka za opisivanje stvari (resursa) i njihovih meusobnih odnosa
+    - Omogucava interoperabilnost izmedju aplikacija koje razmenjuju mašinski citljive i razumljive podatke na webu
+- **RDF iskaz**
+    - **subjekat** (resurs)
+    - **predikat** (svojstva)
+    - **objekat** (resursa ili literala)
+- Resursi
+    - Stvari koje se opisuju sa RDF
+    - [definicija](#inzenjering-dokumenata)
+    - identifikuju se sa IRI(*Internationalized Resource Identifier* - prosirenje URL sa UCS karakterima)
+- Svjostva
+    - Specificni aspekti, karakteristike, atributi ili odnosi korišceni za opis resursa
+    - Vrednost svojstva može biti resurs ili literal
+    - Identifikuju se sa IRI
+- Literali
+    - (tipizirane) konstante
+    - XML Schema tipovi podataka
+    - ISO kodovi jezika
+- URI
+    - Za identifikaciju resursa, svojstava i tipova podataka koriste se [URI](#inzenjering-dokumenata)
+- konkretne sintakse za RDF
+    - *Turtle* (*Terse RDF Triple Language*)
+        - konkretna sintaksa za RDF
+        - Tekstualna serijalizacija RDF grafa
+        - Kompaktna, lako citljiva forma
+    - *RDF/XML*
+        - Tekstualna XML serijalizacija RDF grafa
+        - Obezbeuje maksimalnu interoperabilnost
+    - *RDFa* (RDF in attributes)
+        - Omogucava ugraivanje RDF iskaza u XML dokumente pomocu standardizovanih atributa
+- *GRDDL*
+    - *Gleaning Resource Descriptions from Dialects of Languages* (GRDDL) je W3C specifikacija koja olakšava ekstrakciju RDF iskaza iz XML dokumenata
+    - Obicno se RDF iskazi u RDFa formatu transformišu u RDF iskaze u RDF/XML formatu korišcenjem XSLT transformacije
+- Linked Data in the Wild
+    - *Schema.org*
+        - projekat ciji je cilj stvaranje, održavanje i promovisanje šeme za strukturirane  podatke na internetu
+        - Omogucava web stranama da oznace metapodatke u RDFa, JSON-LD i microdata formatima
+        - Podržan je od strane vodecih web pretraživaca (Google, Yahoo, Bing, Yandex) koji  prepoznaju metapodatke i na taj nacin dobijaju pristup znacenju web strana
+        - Schema.org je deljena kolekcija microdata šema koja ukljucuje hijerarhiju tipova (kao     RDF šema)
+    - *DBPedia*
+        - crowdsourcing projekat ciji je cilj da ekstahuje strukturiran sadržaj iz informacija  koje sa nalaze u Wikipedia-ji
+        - sadržaj se objavljuje u RDF formatu
+        - Omoguceno je postavljanje [SPARQL](#sparql) upita nad DBPedia skupom podataka (i  drugim srodnim skupovima podataka)
+    - *Open Graph*
+        - omogucava integraciju web strana u Social Graph dodavanjem metapodataka u RDFa formatu
+        - Podatke u Open Graph formatu, izmeu ostalih, objavljuju IMDb, Microsoft, NHL, Posterous, Rotten Tomatoes, TIME i YelpIt, a koriste Facebook i Google
+    - *Knowledge Graph*
+        - baza znanja koju koristi Google da bi obogatio web pretragu
+        - Tvrdi se da je Knowledge Graph u oktobru 2016 sadržao više od 70 milijardi cinjenica o ljudima, mestima i stvarima
+        - Cinjenice su predstavljene kao strukturirane informacije za linkovima ka drugim cinjenicama
+
 ## RDFS
 ## SPARQL
 ## Biznis procesi
