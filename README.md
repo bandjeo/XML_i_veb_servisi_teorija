@@ -21,8 +21,8 @@
 - [RDFS](#rdfs)
 - [SPARQL](#sparql)
 - [Biznis procesi](#biznis-procesi)
-- [SOA](#soa)
-- [SOAP](#soap)
+- [SOA](#soa---service-Oriented-Architecture)
+- [SOAP](#Web-servisi-i-SOAP-protokol)
 - [WSDL](#wsdl)
 - [UDDI](#uddi)
 - [Mikroservisi](#mikroservisi)
@@ -1366,9 +1366,655 @@ characters(), processingInstructions()*
     - UML dijagrami aktivnosti mogu se koristiti za modelovanje poslovnih procesa / radnih tokova
     - Prikazuju niz aktivnosti, od pocetne tacke poslovnog procesa do krajnje tacke poslovnog procesa, detaljno opisujuci tok kontrole
     - UML dijagrami aktivnosti opisuju sekvencijalni ili konkurentni tok aktivnosti u sistemu
+    - elementi
+        - *Start* - Predstavlja pocetak poslovnog procesa u dijagramu aktivnosti
+        - *Activity* - Glavni element dijagrama aktivnosti koji predstavlja aktivnosti koje cine modelovani poslovni proces (moze biti kompozitna)
+        - *Control Flow* - Oznacava redosled aktivnosti u poslovnom procesu (tok aktivnosti)
+        - *Object Flow* - Predstavlja objekat (u našem slucaju dokument) koji se prosledjuje od jedne do druge aktivnosti
+        - *Fork* - Deli jedan tok u dva konkurentna toka
+        - *Join* - Spaja dva konkurentna toka u jedan tok
+        - *Decision* - Predstavlja (uslovno) grananje ili spajanje tokova
+        - *Merge* 
+        - *Option Loop* - Predstavlja repetitivne sekvence
+        - *Note* - Omogucava predstavljanje informacije koje nije moguce predstaviti ostalim
+elementima dijagrama aktivnosti
+        - *Send Signal* - Predstavlja slanje signala primajucoj akciji
+        - *Receive Signal* - Predstavlja primanje signala (posle primanja signala izvršava se tok koji izlazi iz ove akcije)
+        - *Flow Final* - Predstavlja kraj jednog toka u poslovnom procesu (poslovni proces može imati više konkurentih tokova)
+        - *End* - Predstavlja kraj poslovnog procesa u dijagramu aktivnosti
 
-## SOA
-## SOAP
+## SOA - Service Oriented Architecture
+- **softverska arthitektura**
+    - osnovna organizacija sistema
+        - otelotvorena u komponentama
+        - njihovim vezama sa drugim komponentama i okruženjem
+        - i principima koji definišu njihov dizajn i evoluciju
+    - skup osnovnih odluka o softverskom rešenju koje ispunjava zadate parametre kvaliteta
+    - obuhvata osnovne komponente, njihove osnovne atribute i način saradnje
+    - izražava se na različitim nivoima apstrakcije
+        - zavisno od veličine projekta
+    - opisuje se iz više perspektiva
+- rana definicija arhitekture
+    - skup najranijih odluka u dizajnu
+        - najteže za kasnije izmene
+        - najvažnije da se dobro odrede
+    - prvi rezultat dizajna gde se vodi računa o parametrima kvaliteta
+    - arhitektura služi i kao skup smernica za projekat
+        - struktura tima
+        - organizacija dokumentacije
+        - raspodela radnih zadataka
+        - raspoređivanje, planiranje, budžet
+        - testiranje, integracija
+    - ustanovljava mehanizme za komunikaciju i koordinaciju komponenti
+- **servis**
+    - u ekonomiji: **usluga** - nematerijalni ekvivalent dobra
+        - ekonomska aktivnost koja ne rezultuje posedovanjem materijalnog dobra
+        - proces koji kreira korist stvarajući promenu korisnika, promenu njihovih dobara ili promenu njihovih neopipljivih vrednosti
+    - u računarstvu: više značenja
+        - Windows servis: RPC Locator, Print Spooler, Event Log, DHCP Client
+        - softverski servis: bezbednosni servis, logovanje, ...
+        - poslovna funkcija: glavna knjiga, upravljanje zalihama
+- SOA nije
+    - neka konkretna tehnologija
+    - novo ime za EAI (*Enterprise application integration*)
+        - alati za povezivanje različitih aplikacija u okviru organizacije
+        - vendor lock-in: vezivanje za jednog proizvođača softvera
+    - novi način da se radi RPC (*Remote procedure call*)
+    - novo rešenje za software reuse
+- SOA ≠ web servisi
+    - web servisi ~ procedure/metode dostupne putem HTTP-a (loše odabrano ime za ovetehnologije)
+    - kada se govori o SOA često se misli na WS* standarde 
+    - "gomila web servisa" ≠ SOA ("just a bunch of web services" (JBOWS))
+- SOA ≠ EAI
+    - alati za povezivanje različitih aplikacija u okviru organizacije
+        - obezbeđuje konzistentne podatke u različitim aplikacijama
+    - vendor lock-in: vezivanje za jednog proizvođača softvera
+    - mane EAI:
+        - EAI je data-centric, a ne process-centric
+        - ne može da isprati promene u poslovnim procesima
+        - ne bavi se poslovnim procesima
+        - vrlo složena tehnička rešenja, retki/skupi kadrovi
+    - web servisi se mogu koristiti kao sredstvo za EAI
+        - izbegava se vendor lock-in
+- easy reuse
+    - OO iskustvo: reuse je komplikovaniji što su komponente koje pokušavamo da iskoristimo veće
+    - servis implementira neku poslovnu funkciju/uslugu
+        - može se iskoristiti (use)
+        - može se integrisati u veći proces
+        - teško se može ponovo iskoristiti (reuse) za implementaciju drugog servisa
+    - fokus je na agilnosti
+        - mogućnost brze promene/adaptacije
+        - a ne na korišćenju originalnog servisa izvan originalnog konteksta
+- SOA ne zahteva pristup "sve ili ništa"
+    - teza mnogih proizvođača: usvojiti SOA i odbaciti sve staro
+    - prava strategija je upravo suprotna: postepeno usvajanje
+        - funkcionisanje organizacije ne može da čeka na novu implementaciju
+        - funkcionisanje organizacije mora biti što manje ometano prilikom tranzicije
+            - dodavanje SOA *shell-a* oko stare implementacije
+            - kasnija zamena stare implementacije novom
+- SOA neće učiniti integraciju jednostavnom
+    - pažnja je često usmerena samo na interfejs
+        - jednostavno je povezati servise u komunikaciji (koristimo XML, WS*)
+    - nije jednostavno dizajnirati interfejs servisa tako da bude upotrebljiv u različitim kontekstima (SOA ovo ne rešava)
+- iz poslovne perspektive: **S**ervice **O**riented Architecture
+    - analiza poslovanja → identifikacija poslovnih procesa
+    - implementacija servisa
+    - komunikacija sa servisom putem poruka
+    - koreografija
+        - kako se obratiti servisu, kako ga iskoristiti u nekom kontekstu
+    - orkestracija
+        - kako implementirati servis pomoću pozivanja drugih servisa
+    - poenta je obezbediti agilnost u poslovanju
+        - softverska podrška mora biti lako izmenljiva
+- iz tehničke perspektive: Service Oriented **A**rchitecture
+    - softverska arhitektura bazirana na komponentama koje su
+        - slabo spregnute (loosely coupled)
+        - interoperabilne
+        - jednostavne za kombinovanje
+    - komponente/servisi imaju jasno definisane interfejse
+    - sistemi se formiraju od komponenti/servisa koje su
+        - krupne (coarse grained)
+        - autonomne
+        - dostupne na adresama (endpoints) koje se mogu otkriti
+        - komuniciraju putem poruka
+- **Koncepti**
+    - **Servis** - sredstvo koje ispunjava neki zahtev
+        - jasna i jedinstvena funkcija
+        - visoka kohezija
+        - "krupno parče" poslovne logike
+        - autonoman rad, samodovoljan, donekle i samoisceljujući
+    - **Ugovor** (*contract*) - skup poruka koje poznaje servis
+        - jednostrani: servis sam definiše svoje poruke
+        - dvo/višestrani: poruke se definišu za dva ili više servisa u kombinaciji
+        - analogno OO pojmu interfejsa
+    - **Endpoint** - adresa (URI) na kojoj je servis dostupan
+        - različiti ugovori jednog servisa mogu biti na različitim adresama
+    - **Poruka** - jedinica komunikacije sa servisom
+        - razni tehnološki oblici: HTTP GET, SOAP, SMTP,
+        - razlikuje se od RPC: ima header (za infrastrukturne servise) i body
+    - **Politika** - uslovi kada je servis dostupan
+        - specificira dinamičke osobine servisa (kada i za koga je dostupan)
+        - može da se ažurira run-time
+        - odvojena od poslovne logike
+        - ono što razlikuje servis od OO objekata/komponenti
+    - **Korisnik servisa** bilo koji softver koji komunicira sa servisom putem razmene poruka
+        - klijent aplikacije
+        - drugi servisi
+- Interface
+    - četiri koncepta se bave interfejsom (poruka, ugovor, endpoint, policy)
+        - u OO paradigmi samo jedan
+    - fokus na interfejs omogućava kreiranje komponenti koje su
+        - slabo povezane
+        - jednostavne za kombinovanje
+    - isti koncepti koriste se u oba viđenja SOA
+        - jednostavnija konvergencija poslovne i tehničke perspektive
+- *Distribuirano okruzenje*
+    - pogrešne pretpostavke o distribuiranom okruženju
+        - mreža je homogena
+        - mreža je pouzdana
+        - mreža je bezbedna
+        - kašnjenje je nula
+        - propusni opseg je neograničen
+        - prenos ne košta
+        - topologija se ne menja
+        - postoji jedan administrator
+    - poruke se šalju ponovo
+    - poruke mogu da stignu više puta
+    - važna karakteristika poruka: idempotentnost
+        - proizvodi isti rezultat i kad se primeni više puta
+        - primer ne-idempotentne poruke - `podigni 1000€ sa računa`
+        - primer idempotentne poruke - `ako nisam ranije podigao 1000€ uz oznaku #XYZ, podigni 1000€ i označi to sa #XYZ`
+    - modeli komunikacije
+        - zahtev/odgovor (klasična klijent/server komunikacija)
+        - zahtev/reakcija (odgovor na zahtev se obrađuje dugo, šalje asinhrono)
+- Tehnoloska podrska
+    - web servisi: SOAP, WSDL, UDDI
+    - dodatni WS-* standardi
+        - WS-Interoperability
+        - WS-Security
+        - WS-ReliableMessaging
+        - WS-Reliability
+        - WS-Transactions
+        - WS-Coordination
+        - WS-Orchestration, WS-Choreography, WS-Addressing, WS-Policy...
+- **Sabloni**
+    - patterns
+        - struktura servisa
+        - performanse, skalabilnost i dostupnost
+        - bezbednost i upravljivost
+        - interakcija servisa
+        - interakcija sa korisnikom
+        - kompozicija servisa
+    - anti-patterns
+        - struktura servisa
+        - performanse
+
+## Web servisi i SOAP protokol
+- pojam **web servisa**
+    - web servisi predstavljaju programe koji su dostupni putem javno objavljenih interfejsa i putem standardnih komunikacionih protokola
+    - ono što se danas najčešće podrazumeva pod web servisima su programi
+        - dostupni putem SOAP protokola
+        - sa interfejsom za pristup opisanim pomoću WSDL jezika
+        - potencijalno) registrovani u UDDI servisu.
+- Web servisi i tehnologije distribuiranih sistema
+    - *DCOM* - tehnologija distribuiranih objekata specifična za Windows platformu
+    - *Java RMI* - tehnologija distribuiranih objekata specifična za Java platformu
+    - *CORBA* - tehnologija distribuiranih objekata nezavisna od platforme i programskog jezika
+    - *EJB* - tehnologija distribuiranih objekata koja se oslanja na RMI i CORBA
+    - *.NET* - tehnologija distribuiranih objekata specifična za Windows platformu
+- čemu još jedna tehnologija?
+    - svi elementi arhitekture, uključujući i komunikacioni protokol, su zasnovani na XML-u
+        - jednostavnija implementacija nego kod binarnih formata
+        - veća interoperabilnost među različitim implementacijama
+    - upotreba standardnih Internet transportnih mehanizama
+        - firewall-friendly
+        - globalna dostupnost web servisa
+    - fokus je na interoperabilnosti
+    - konverzija podataka u/iz XML formata
+        - nisu pogodni za sisteme gde su performanse komunikacije od posebnog značaja
+    - homogeni sistemi u celosti implementirani na jednoj razvojnoj platformi
+        - nepotrebno komplikovanje implementacije sistema
+- Dve paradigme distribuiranih sistema
+    - RPC = Remote Procedure Calls - podražavaju sintaksu i semantiku pozivanja funkcija/metoda
+        - jednostavno za učenje
+        - efikasno za kodiranje
+        - tipično za sinhronu komunikaciju
+    - slanje poruka (message passing, document-style) - komunikacija između sistema pomoću slanja (strukturiranih) poruka
+        - veza između sistema je data formatima poruka
+        - bolje razdvajanje delova sistema (loosely coupled)
+        - veća međusobna nezavisnost pojedinih delova
+        - tipično za asinhronu komunikaciju
+- **API-level specifikacije**
+    - predstavljaju definicije klasa, interfejsa, metoda, itd. koje su načinjene za date potrebe
+    - primeri:
+        - JDBC – pristup relacionim bazama podataka
+        - JDO – pristup objektnim bazama podataka
+        - JNDI – pristup direktorijumskim sevisima
+    - omogućavaju pojednostavljenu zamenu programskih modula koji su apstrahovani datim API-jem
+        - zamena baze podataka => zamena JDBC drajvera, neznatna promena programa
+        - zamena direktorijumskog servera => zamena JNDI provajdera, neznatna promena programa
+        - uspešna komunikacija JDBC drajvera jednog proizvođača sa bazom podataka drugog nije garantovana
+    - konkretna implementacija predstavlja programsku biblioteku koja podržava API
+        - preuzima se od nekog proizvođača
+        - pišemo je sami
+- **wire-level specifikacije**
+    - predstavljaju definicije formata poruka koji se razmenjuju između učesnika u komunikaciji i postupka razmene poruka
+    - primeri:
+        - HTTP
+        - SMTP (*Simple mail transfer protocol*)
+    - wire-level specifikacije omogućavaju komunikaciju heterogenih delova sistema
+        - zamena jednog web servera drugim => klijenti će i dalje moći da komuniciraju
+    - konkretna implementacija podrazumeva biblioteku koja implementira dati protokol
+    - način pristupa biblioteci nije unapred propisan
+    - programski kod zavisi od upotrebljene biblioteke
+- API-level specifikacija za pristup wire-level protokolima
+    - najbolje rešenje u smislu prenosivosti i interoperabilnosti programa
+    - komplikovano za upotrebu sa stanovišta programera (više isprepletanih standarda)
+    - primeri:
+        - JAXM – Java API for XML Messaging
+        - JAXB – Java API for XML Binding
+        - JAX-RPC – Java API for XML-based RPC
+        - JAXR – Java API for XML Registries
+- **SOAP** - *Simple Object Access Protocol*
+    - protokol za komunikaciju sa web servisima
+    - definiše format poruka koje razmenjuju učesnici
+    - oslanja se na neki transportni mehanizam za prenos SOAP poruka
+        - najčešće HTTP, ali nije obavezno, može i npr. SMTP
+    - SOAP verzija 1.2 je standard koga propisuje W3C
+    - u komunikaciji između krajnjih učesnika (endpoints) može biti posrednika (SOAP proxies)
+- **HTTP binding**
+    - upotreba HTTP protokola za prenos SOAP poruka
+    - za slanje zahteva koristi se HTTP POST komanda
+- struktura poruke
+    - XML dokument sa korenskim elementom Envelope
+        - opcionim podelementom Header
+        - obaveznim podelementom Body sa opcionim podelementom Fault
+- **Envelope**
+    - obuhvata celu SOAP poruk
+    - definisan je u prostoru imena `http://www.w3.org/2001/12/soap-envelope`
+    - atribut `encodingStyle` definiše namespace sa tipovima podataka koji se koriste u dokumentu
+        - odnosi se na element u kome je definisan i sve njegove podelemente
+        - formalno nema podrazumevanu vrednost
+        - u praksi se koristi `http://www.w3.org/2001/12/soap-encoding`
+        - zapravo definiše način serijalizacije podataka iz aplikacije u XML
+- **Header**
+    - sadrži podatke koji opisuju kontekst u kome se šalje poruka ili uputstva za posrednike u komunikaciji između krajnjih učesnika
+    - ovi podaci ne predstavljaju samu poruku, već pomoćne podatke koji utiču na način obrade poruke
+    - na primer:
+        - podaci za autentifikaciju
+        - podaci za praćenje sesije
+        - podaci za upravljanje transakcijama
+    - Header pripada istom namespace-u kao i Envelope
+    - svi Header podelementi moraju biti kvalifikovani u odgovarajući namespace
+    - atribut `soap:actor` označava onaj čvor u komunikaciji (proxy ili endpoint) za koga je namenjen dati podatak u zaglavlju
+    - svaki SOAP procesor može da dodaje elemente u zaglavlje na putu poruke od pošiljaoca do konačnog primaoca
+    - svaki SOAP procesor je dužan da ukloni one elemente iz zaglavlja koji su namenjeni njemu
+        - ono što je namenjeno njemu može ponovo dodati u zaglavlje prilikom daljeg slanja
+    - `soap:Header@mustUnderstand` - Koncept opcionih i obaveznih elemenata u zaglavlju
+        - u smislu da je primalac dužan da razume i na pravilan način upotrebi dati podatak u zaglavlju
+        - Efekat: primalac poruke ne može da obradi poruku jer ne ume da interpretira obavezni podatak u zaglavlju
+        - ako je element zaglavlja obavezan, atribut `soap:mustUnderstand` ima vrednost 1
+- **Body**
+    - sadrži konkretan SOAP zahtev ili odgovor
+    - pripada istom namespace-u kao i Envelope i Header
+    - koristi se kod svih vrsta web servisa (RPC-style, document-style)
+- **Fault**
+    - opcioni podelement elementa `Body`
+    - sadrži podatke o nastalim greškama namenjene klijentu
+    - ima četiri podelementa:
+        - faultcode
+        - faultstring
+        - faultactor
+        - detail
+- `soap:Fault/faultcode` - indikacija greške namenjena programskoj obradi
+    - obavezan
+    - moguće vrednosti:
+        - `VersionMismatch` - element Envelope pripada pogrešnom namespace-u
+        - `MustUnderstand` - neposredni Header podelement, sa atributom `mustUnderstand="1"`, nije interpretiran
+        - `Client` - poruka sa zahtevom je nepravilno formirana ili sadrži neispravne podatke. Klijent ne bi trebalo da istu poruku ponovo šalje
+        - `Server` - poruka nije mogla biti obrađena zbog problema u radu servera; sama poruka ima ispravan format i sadržaj. Klijent može pokušati sa istom porukom kasnije
+    - Predefinisani kodovi greške su proširivi, na primer
+        - `Server.DatabaseFailure`
+        - `Server.DatabaseFailure.MaxUsersConnected`
+- `soap:Fault/faultstring`
+    - tekstualni opis greške namenjen čoveku (human-readable)
+    - obavezan
+- `soap:Fault/faultactor`
+    - indikacija koji čvor u komunikaciji je uzrok greške (u paru sa `actor` atributom)
+    - ako se ne navede, podrazumeva se da je greška nastala na krajnjem čvoru komunikacije (*endpoint*)
+- `soap:Fault/detail`
+    - opisuje greške koje su posledica neispravnog sadržaja Body elementa u zahtevu
+    - ako sadržaj (ili nedostatak sadržaja) u Body elementu sprečavaju obradu poruke, element `detail` sadrži opis greške
+    - ako greška nije nastala usled sadržaja Body elementa u zahtevu, element `detail` se ne sme pojaviti
+- dve mogucnosti reprezentacije podataka
+    - SOAP encoding: mapiranje podataka iz Jave/C++/... na XML u skladu sa SOAP specifikacijom
+    - XML Schema: podaci koji se prenose definisani su XML šemom
+- *SOAP encoding*
+    - podaci koji se nalaze u okviru Body elementa nastali su serijalizacijom podataka iz aplikacije u XML format u skladu sa nekom XML šemom
+    - SOAP ne definiše podrazumevanu šemu
+    - može se koristiti više različitih šema u jednoj SOAP poruci
+    - izbor aktivne šeme određuje se atributom `encodingStyle`
+    - jedina unapred definisana šema pripada namespace-u `http://www.w3.org/2001/12/soap-encoding`
+        - sadrži sve predefinisane tipove podataka iz specifikacije *XML Schema Part 2: Datatypes*
+        - npr. `xsd:string`,` xsd:int`,` xsd:boolean`, itd
+    - svi podaci u telu poruke predstavljeni su kao sadržaj elementa
+- tipovi podataka
+    - **jednostavni** (*simple*)
+        - atomičke vrednosti
+        - ne sadrži podelemente niti atribute
+    - **agregirani** (*compound*)
+        - sadrži više atomičkih podataka organizovanih u neku strukturu
+        - npr. niz
+    - **navođenje tipa podatka**
+        - atributom xsi:type
+        - elementima niza je tip definisan za ceo niz
+        - tipovi su predefinisani tipovi ili novi tipovi definisani pomoću XML Schema jezika
+    - **reference**
+        - element na koji ukazuje referenca mora sadržati atribut `id` tipa `ID`
+        - elementi koji predstavljaju referencu su prazni i imaju atribut `href` čiji sadržaj je identifikator
+    - stringovi, nabrojivi tipovi, binarni podaci, null vrednosti, nizovi
+    - `soapenc:root` - specijalni atribut koji označava
+        - početak liste
+        - koren stabla
+        - itd.
+- *polimorfizam*
+    - recimo da je element `quantity` u nekoj šemi definisan kao tip `xsd:int`
+    - *polimorfizam* predstavlja dinamičku promenu tipa u telu poruke
+    - prmer `<quantity xsi:type="xsd:float">37</quantity>`
+- Web servisi RPC tipa
+    - pozivanje metoda udaljenog objekta
+        - SOAP zahtev = poziv metode
+        - SOAP odgovor = rezultat metode
+    - za poziv je potrebno
+        - identifikator objekta kome se upućuje poruka (ugradjuje se u POST komandu HTTP zahteva)
+        - naziv metode - određen podelementom Body elementa, servis mora da ga prepozna
+        - parametri metode - dobijeni serijalizacijom podataka iz aplikacije
+        - podaci za SOAP zaglavlje - strukturiran prema datoj šemi
+- Document-style web servisi
+    - servisu se šalje XML dokument
+    - metoda servisa koja će obraditi dokument se ipak mora nekako navesti
+        - naziv prvog Body podelementa mora naznačavati metodu koja će se pozvati za obradu datog dokumenta
+        - namespace tog elementa identifikuje servis koji će obraditi zahtev
+    - komunikacija nije obavezno po modelu zahtev/odgovor
+
+
 ## WSDL
+- WSDL = *Web Services Description Language*
+    - XML gramatika za opisivanje web servisa kao skupa krajnjih pristupnih tačaka (access endpoints) koji mogu da razmenjuju poruke na RPC - ili document-style način 
+        - access endpoint = URL na koji se šalje zahtev
+    - WSDL ~ CORBA IDL
+        - oba standarda su namenjena definisanju interfejsa i tipova podataka za servise dostupne sa udaljenih klijenata
+    - WSDL obezbeđuje proširivost koju CORBA IDL nema
+        - opisivanje krajnjih pristupnih tačaka (endpoints) i poruka bez obzira na korišćeni mrežni protokol ili format poruka za razmenu
+        - tretman poruka kao apstraktnih opisa podataka koji se razmenjuju
+        - tretman tipova portova kao apstraktnih kolekcija operacija web servisa
+- **koncepti**
+    - WSDL fajl opisuje
+        - šta servis radi
+        - kako pozvati njegove operacije
+        - gde ga pronaći
+    - na osnovu WSDL specifikacije servisa moguće je generisati
+        - implementaciju servisa (delimičnu – tela metoda ćemo morati sami da napišemo!)
+        - klijentske klase za pristup servisu
+    - na osnovu datih interfejsa u implementaciji servisa moguće je generisati
+        - WSDL fajl koji opisuje dati servis
+    - koka/jaje problem
+        - da li prvo napisati WSDL specifikaciju servisa pa onda pisati implementaciju servisa (kada očekujemo da će međusobno komunicirati delovi sistema zasnovani na različitim tehnologijama)
+        - da li prvo definisati interfejs servisa u jeziku implementacije pa onda generisati WSDL opis (kada obe strane u komunikaciji koriste istu implementacionu tehnologiju)
+- **struktura**
+    - `wsdl:definitions`
+        - korenski element WSDL dokumenta
+        - često se koristi za globalne namespace deklaracije
+    - `wsdl:import`
+        - dodaje sadržaj datog namespace-a u tekući WSDL dokument
+        - način za modularizaciju WSDL dokumenata
+        - dodati namespace definisan je u datom fajlu (preporučuje se navođenje apsolutne URL putanje zbog prenosivosti)
+        - dodati namespace tipično sadrži zajedničke XML Schema definicije tipova
+    - `wsdl:types`
+        - kontejner za definicije tipova podataka koji se koriste dalje u dokumentu
+        - kao jezik za definisanje tipova podataka najčešće se koristi W3C XML Schema (drugi se retko koriste)
+        - ugrađeni W3C XML Schema tipovi podataka ne moraju se eksplicitno importovati
+    - `wsdl:message`
+        - za definisanje poruka koje se razmenjuju u komunikaciji sa web servisom
+        - poruka se sastoji iz delova - *parts* (svaki deo pripada nekom tipu podataka)
+    - `wsdl:portType`
+        - definiše skup operacija koje se mogu izvršiti nad web servisom
+        - operacija, kao element ovog skupa, može sadržati ulaznu i izlaznu poruku
+        - četiri tipa operacija (*One-way*, *Request-response*, *Solicit-response*, *Notification*)
+    - `wsdl:binding`
+        - definiše konkretan protokol i format podataka za port type
+        - može se koristiti standardan protokol (HTTP, SOAP, MIME, itd) ili definisati nov
+        - port type predstavlja apstraktnu definiciju operacija
+        - pomoću binding elementa ove operacije se konkretizuju u skladu sa izabranim protokolom
+        - za svaku operaciju navedenu u portType sekciji mora se navesti odgovarajuća stavka u binding sekciji
+    - `wsdl:service`
+        - u prethodnim elementima nigde nije navedeno na kojoj URL adresi se nalazi web servis
+        - element service nije obavezan
+        - koristi se kada je potrebno definisati konkretan endpoint za web servis
+        - servis je skup portova (moguće je definisati servis koji se sastoji od portova koji su dostupni na različitim adresama)
+
+
 ## UDDI
+- UDDI = Universal Description, Discovery, and Integration
+- **Koncepti**
+    - softver jedne firme koristi web servise druge firme kako bi obavio poslovnu transakciju
+    - u poslovnom okruženju sa puno partnera potrebno je organizovati podatke o njima
+        - ne samo uobičajene podatke o samim partnerima, već i podatke o njihovim web servisima
+        - takvih web servisa potencijalno ima mnogo
+    - UDDI predstavlja jedno moguće rešenje za organizaciju kataloga poslovnih partnera i sa podacima o njihovim servisima
+    - standard za objavljivanje podataka
+        - o sopstvenoj poslovnoj organizaciji ("business") zajedno
+        - podacima o pristupu softverskim servisima koje organizacija nudi
+    - UDDI omogućuje formiranje registra je na globalnom (planetarnom) nivou
+    - UDDI registar sadrži tri tipa informacija o organizaciji (omogucuju pronalazenje servisa)
+        - **white pages** - osnovne informacije za kontakt, poreski identifikacioni broj (PIB), i slično
+        - **yellow pages** - informacije koje opisuju usluge web servisa pomoću svrstavanja u razne kategorije
+        - **green pages** - tehničke informacije koje opisuju funkcije web servisa, uključujući i podatke o lokaciji servisa
+- **Korisnici**
+    - **poslovni službenici**
+        - koriste UDDI registar slično kao i Internet pretraživač
+        - rezultat pretrage je skup podataka o nekoj organizaciji, ne samo njen URL
+        - pošto svi podaci u UDDI registru nisu uvek *reader-friendly*, korisnici im mogu pristupati kroz razne portale
+    - **softverski inženjeri**
+        - koriste UDDI registar da pronađu podatke o odgovarajućim servisima
+        - ili da registruju sopstveni servis
+- **Arhitektura**
+    - jedan logički jedinstveni servis na svetskom nivou
+    - sastoji se iz više čvorova
+    - lokalne baze podataka u čvorovima sinhronizuju se replikacijom
+    - dodavanje podataka u registar odvija se na jednom čvoru
+        - taj čvor postaje "vlasnik" tih podataka (tj. upravlja njima)
+        - sve kasnije izmene nad podacima moraju se izvesti na istom čvoru
+    - pristup bilo kom čvoru registra omogućava pristup svim podacima registra
+    - javni svetski UDDI registar - UBR (UDDI Business Registry)
+    - privatni UDDI registri po organizacijama (ne moraju biti deo UBR)
+    - svaka organizacija može postaviti UDDI čvor i uključiti ga u UBR
+- **Specifikacije**
+    - sve specifikacije su dostupne na `http://www.uddi.org`
+    - **UDDI replication** - opisuje procese i interfejse koje treba da implementira UDDI čvor kako bi obezbedio replikaciju u okviru UBR
+    - **UDDI operators** - funkcionalni zahtevi postavljeni pred svaki čvor: skladištenje i backup podataka; nije obavezno za privatne registre
+    - **UDDI programmer's API** - definiše funkcije za publikovanje i otkrivanje podataka o servisima; definisan je na nivou SOAP poruka
+    - **UDDI data structures** - definiše strukture sadržane u SOAP porukama kojima se komunicira sa registrom
+    - *UDDI XML API* - XML Schema dokument koji definiše tipove podataka i strukture za UDDI
+- **Model podataka**
+    - podaci u UDDI registru sastoje se iz entiteta koji se skladište u čvorovima i izražavaju se XML jezikom
+    - model poseduje sledeće tipove entiteta
+        - businessEntity
+        - businessService
+        - bindingTemplate
+        - tModel
+        - publisherAssertion
+        - subscription
+    - nad skupom podataka UDDI registra moguće je definisati više taksonomskih klasifikacija
+        - mogućnosti za šifriranje (delatnosti, proizvoda, geografskog položaja)
+    - kontrolisani i nekontrolisani šifarnici
+        - *checked value sets*: unete vrednosti moraju pripadati konačnom skupu
+        - *unchecked value sets*: unete vrednosti se ne proveravaju
+- `businessEntity`
+    - opisuje organizaciju
+    - korenski element u UDDI modelu podataka
+    - atributi
+        - `businessKey`: indentifikator organizacije
+        - `operator`: identifikator UDDI servera koji je vlasnik podataka
+        - `authorizedName`: identifikator osobe koja je postavila informacije na server
+    - podelementi
+        - `discoveryURLs`: linkovi ka resursima sa više detalja o organizaciji
+        - `name`: naziv organizacije
+        - `description`: kratak opis organizacije
+        - `contacts`: informacije za kontakt
+        - `businessServices`: businessService elementi koji opisuju delatnost
+        - `identifierBag`: identifikatori organizacije
+        - `categoryBag`: šifrirane oznake delatnosti organizacije
+- `businessService`
+    - opisuje usluge (servise) koje nudi organizacija
+    - atributi
+        - `serviceKey`: identifikator usluge koju pruža organizacija
+        - `businessKey`: identifikator organizacije (iz businessEntity elementa)
+    - podelementi
+        - `name`: naziv usluge
+        - `serviceDescription`: kratak opis usluge
+        - `bindingTemplates`: dalje opisuju uslugu
+        - `categoryBag`: kategorizacija delatnosti
+- `bindingTemplate`
+    - opisuje tehničke informacije potrebne za pristup uslugama
+    - atributi
+        - `serviceKey`: identifikator usluge
+        - `bindingKey`: identifikator bindingTemplate elementa
+    - podelementi
+        - `description`: kratak opis servisa
+        - `accessPoint`: adresa na kojoj se nalazi web servis
+        - `hostingRedirector`: referenca na drugi bindingTemplate
+        - `tModelInstanceDetails`: reference na tehničke modele
+- `tModel`
+    - opisuje "tehnički model" nekog koncepta, npr. tip web servisa, protokol koji koristi web servis u cilju ponovnog korišćenja (*reuse*) istdefinicije kroz celokupan sistem
+        - može biti izdvojen kao posebna stavka u bazi
+        - predstavlja interfejs nekog servisa
+        - ako se tModel definiše na nivou grupe organizacija, sve organizacije dele isttModel   (npr. aviokompanije)
+        - WSDL
+    - ukazuje na definicije web servisa
+    - ima UUID koji se generiše prilikom registracije
+        - koristi se za ukazivanje na tehničke detalje: transportni protokol, formati podataka
+    - atributi
+        - `tModelKey`: vrednost UUID-a tModela
+        - `operator`: UDDI server koji je vlasnik tModela
+        - `authorizedName`: identifikator osobe koja je publikovala informacije
+    - podelementi
+        - `name`: naziv tModela
+        - `description`: kratak opis tModela
+        - `overviewDoc`: resursi sa detaljnim opisom tModela
+        - `identifierBag`: identifikatori tModela
+        - `categoryBag`: kategorizacija tModela
+    - kategorizacija (na primeru tModela)
+        - način da tModel opišemo metapodacima pomoću kojih će neko pronaći naš servis
+        - UDDI core models: predefinisani tModeli namenjeni klasifikaciji (oslanja se na WSDL-bazirani web servis)
+- `publisherAssertion`
+    - opisuje vezu jednog businessEntity sa drugibusinessEntity-ima
+    - podelementi
+        - `fromKey`: identifikator prve organizacije u vezi
+        - `toKey`: identifikator druge organizacije u vezi
+        - `keyedReference`: opisuje vrstu veze
+- `subscription`
+    - opisuje zahtev za praćenjem promena u okviru nekog entiteta
+- *UDDI Programmer APIs*
+    - *Inquiry API* - pronalaženje i preuzimanje podataka o entitetima u registru
+    - *Publication API* - publikovanje i ažuriranje informacija o entitetima u registru
+    - *Security Policy API* - autentifikacija UDDI klijenata
+    - *Custody and Ownership Transfer API* - definisanje vlasništva nad entitetima među čvorovima UDDI registra
+    - *Subscription API* - registracija radi praćenja promena nad željenim entitetima u registru
+    - *Value Set API* - održavanje šifarnika
+- *Inquiry API*
+    - tri režima preuzimanja podataka
+        - browse pattern (pregledanje širokog skupa podataka, izbor nekog entiteta i prelazak na drill-down)
+        - drill-down pattern (na osnovu rezultata find_xx metoda - identifikatora entiteta - preuzimanje detalja o entitetu)
+        - invocation pattern (na osnovu bindingTemplate podataka za dati servis on se može i pozvati)
+
 ## Mikroservisi
+- Još jedan stil arhitekture softverskih sistema, u kome se velike složene aplikacije komponuju sklapanjem pojedinačnih servisa.
+    - Koncept nije potpuna novina - predstavlja samo još jednan pristup implementaciji SOA
+- Mikroservisi mogu biti nezavisno deployovani i međusobno slabo spregnuti
+- Kod mikroservisnih arhitektura pojedinačni servisi obavljaju jedan zadatak
+    - Taj jedan zadatak predstavlja jednu poslovnu funkciju celokupnog sistema
+- **Osnovne karakteristike**
+    - Svaki mikroservis moguće je razvijati u programskom jeziku koji je najpogodniji, nezavisno od svih ostalih
+    - Komunikacija između mikroservisa se obavlja programskim interfejsima API-jima koji su nezavisni programskog jezika (npr. Representational State Transfer - *REST*).
+    - Mikroservisi (moduli koji ih realizuju) imaju potpuno ograničen kontekst - ne moraju biti svesni nikakvih implementacionih detalja i arhitekture drugih mikroservisih modula.
+- **Monolitne** aplikacije
+    - **Višeslojne** arhitekture
+        - klijentski sloj
+        - sloj biznis logike
+        - sloj podataka
+    - nove funkcionalnosti
+        - Obično se poveća složenost backend sloja
+        - značajno zakomplikujemo srednji sloj
+        - Kod je na sreću ipak organizovan po modulima, pa povećanje broja funkcija dovodi do povećanja broja modula u srednjem sloju aplikacije
+    - skaliranje
+        - Pokreće se više instanci backend aplikacija sa identičnim modulima kako bi odgovorile na povećane zahteve
+        - lose ako su nam neke funkcije sistema više opterećene nego neke druge
+- **Mikroservisni** pristup
+    - Mikroservisi se orijentišu na jednostavnu poslovnu funkcionalnost - jedan zadatak, i kao takvi su po pravilu mali moduli
+    - Nema pravila koliko mali moraju biti, i ne treba se koncentrisati na broj linija koda nego na funkcionalnost
+    - Ključna je jednostavnost interfejsa - ona obično dovodi i do relativno male implementacije, ali to ne mora uvek biti slučaj
+    - Mikroservisni modul treba tretirati kao nezavisnu aplikaciju ili nezavisni proizvod. Poželjno je da ima sopstveni repozitorijum za upravljanje kodom i sopstveni *build* i *deployment*
+- **Reuseability** mikroservisa
+    - Iako je ponovna iskoristivost poželjna nije i obavezna i nije jedini razlog njihovog uvođenja
+    - Granularnost mikroservisa se takođe određuje na osnovu poslovnih potreba
+    - Problem latentnosti servisa - ukoliko je previše usitnjen i zateva previše poziva ka drugim mikroservisima može se osetiti problem usporenja aplikacije
+- Prednosti
+    - Nema glomaznih modula sa "špageti" kodom
+    - Komponente se mogu razvijati potpuno nezavisno jedna od druge
+    - Komponente se mogu relativno jednostavno menjati
+    - Moguće različito skaliranje različitih komponenti
+- Pretpostavke za uspesnu mikroservisnu arhitekturu
+    - 1 komponenta = 1 servis
+    - "pametni" endpointi i "glupi" komunikacioni kanali
+    - decentralizovano upravljanje
+    - decentralizovano upravljanje podacima
+    - automatizacija infrastrukture
+    - dizajnirati arhitekturu da trpi otkaze
+    - evolutivni dizajn
+- Velicina komponente
+    - Komponente se mogu formirati kao
+        - biblioteke (moduli)
+        - servisi
+    - Mikroservisi promovišu modularizaciju pomoću servise
+        - svaku komponentu možete pojedinačno zameniti
+        - svaku komponentu možete nezavisno ažurirati
+- Organizacija razvoja
+    - klasicna
+        - 1 tim po sloju, i svaki tim se bavi funkcionalnostima koje su u datom sloju bez obzira na to koji segment aplikacije opslužuju
+    - usmerena na prozivod ili segment poslovanja
+        - 1 tim se bavi jednim segmentom poslovanja, obezbeđuje funkcionalnost za jedan proizvod i sastoji se od ljudi svih profila koji su neophodni da taj segment proradi
+        - Timovi se koncentrišu na samo jedan poslovni zadataka i mogu da komuniciraju direktno sa klijentima
+- Decentralizovano upravljanje
+    - Odluke o načinu implementacije se donose decentralizoanvo
+    - Servisi podatke razmenjuju **iskljucivo** preko javno dostupnih API-ja, nema oslanjanja na deljene baze podataka
+    - Omogućava svakom servisu da podacima upravlja na način koji je najpogodniji sa stanovišta tog servisa
+- Automatizacija infrastrukture
+    - Za efikasno korišćenje mikroservisnih arhitetkruea najverovatnije će biti neophodno da
+        - Razvijate servise nezavisno
+        - Servise nezavisno puštate u rad (deployment)
+    - Morate obezbediti
+        - mogućnost da dobijete serverse kapacitete brzo kako bi mogli da iskoristite skalabilnost rešenja
+        - dobar monitoring kako bi bili u stanju da vidite kada servisi ne komuniciraju kako treba
+        - brz deployment novih ili ažuriranih servisa
+        - razvijenu kulturu jake integracije timova koji rade nadzor servisa u radu i tim akoji radi razvoj (*devops*)
+    - Ključna stvar za uspeh mikroservisa je automatizacija svega navedenog
+- Dizajniranje sistema tako da bude otporan na otkaze
+    - Konceptom mikroservisa ukupna struktura sistema može ozbiljno da se zakomplikuje
+    - Mnogo "pokretnih" delića koji mogu da otkažu
+        - Pojedini servisi mogu imati greške
+        - Pojedini servisi mogu raditi vrlo sporo
+        - Celi serveri mogu pasti
+        - Sa 60,000 HD ova 3 dnevno će verovanto otkazati
+    - Ključna stvar - dizajnirati svaki servis pretpostavljajući da u nekom momentu sve ono od čega taj servis zavisi može prosto da nestane i bude nedostupno
+        - servis tada mora otkazati *gracefully*
+- Održavanje konzistencije
+    - Jedno od pravila mikroservisa je ne koristiti deljene baze podataka
+    - Neke podatke ipak verovatno koristi više servisa
+    - Ažuriranje se šalje preko AJAX poziva
+    - Nema garancije da će svi moduli obaviti ažuriranje u istom trenutku
+    - Garantuje se da će oni u nekom momentu ažurirati podatke - **evenutal consistency**
+    - Glavni problem je što različiti servisi mogu odgovoriti na zahtev u različitim vremenskim trenucima
+    - Ako jedan zahtev rezultuje promenom resursa na jednom servisu, ali ostali još nisu procesirali korespondirajuće zahteve
+        - Moguće je da se dobiju nekonzistentna stanja za korespondirajuće resurse
+        - Mora se napisati dodatna logika da korektno obradi ovakve situacije
